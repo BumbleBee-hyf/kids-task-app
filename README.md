@@ -1,73 +1,90 @@
-# React + TypeScript + Vite
+# 任务积分乐园 - 儿童每日任务管理系统
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+一个给小朋友每日任务打卡获取积分、抽取代金券的互动应用，家长可以发布任务并审批。
 
-Currently, two official plugins are available:
+## 功能介绍
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+### 两种角色
 
-## React Compiler
+| 角色 | 说明 |
+|------|------|
+| 小朋友（Student） | 查看任务、提交完成、签到领积分、抽奖、提现代金券 |
+| 家长（Parent） | 发布/管理任务、审批任务完成情况、审批提现请求 |
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+### 核心功能
 
-## Expanding the ESLint configuration
+**任务管理**
+- 支持三种任务类型：临时任务、每日任务、周期任务（按星期几重复）
+- 每日/周期任务每天自动生成，未完成的昨日任务自动清理
+- 任务流转：待完成 → 已提交 → 已通过/已驳回
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+**积分体系**
+- 完成任务经家长审批后获得积分（优秀 100%、良好 80%）
+- 每日签到获得 10 积分，支持连续签到天数统计
+- 抽奖消耗 10 积分/次
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+**抽奖中心**
+- 抽箱子：5 个随机礼盒，点击开启，有机会获得 1~10 元代金券或恶搞表情
+- 大转盘：9 格旋转轮盘，最高可中 100 元大奖
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+**代金券与提现**
+- 抽奖获得的代金券自动存入钱包
+- 小朋友可发起提现请求，家长审批后按 FIFO 顺序扣减代金券
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+## 快速开始
+
+### 环境要求
+
+- Node.js >= 18
+- npm >= 9
+
+### 安装与启动
+
+```bash
+# 安装依赖
+npm install
+
+# 启动开发环境（前端 + 后端同时运行）
+npm run dev:full
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+启动后访问 http://localhost:5173
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+### 测试账号
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+| 角色 | 用户名 | 密码 |
+|------|--------|------|
+| 家长 | parent1 | 1234 |
+| 小朋友 | student1 | 1234 |
+
+## 其他命令
+
+```bash
+# 仅启动前端开发服务器
+npm run dev
+
+# 仅启动后端 API 服务
+npm run server
+
+# 生产构建
+npm run build
+
+# 预览生产构建
+npm run preview
+
+# 代码检查
+npm run lint
 ```
+
+## 生产部署
+
+1. 构建前端：`npm run build`，生成 `dist/` 目录
+2. 启动后端：`node server/server.js`（默认端口 3001）
+3. 使用 nginx 反向代理，参考项目中的 `nginx.conf`
+
+## 技术栈
+
+- **前端**：React 19 + TypeScript + Vite + React Router
+- **后端**：Node.js 原生 HTTP 服务（无框架依赖）
+- **数据存储**：JSON 文件（server/db.json）
+- **游戏组件**：@play-kit/games（抽奖动画）
