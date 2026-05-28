@@ -1,0 +1,590 @@
+.task-form {
+  margin-bottom: var(--spacing-lg);
+  background: var(--bg-card);
+}
+
+.task-table-wrapper {
+  overflow-x: auto;
+  background: var(--bg-card);
+  -webkit-overflow-scrolling: touch;
+  border-radius: var(--border-radius-lg);
+  border: 1px solid var(--border-color);
+}
+
+.task-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+.task-table th {
+  text-align: left;
+  padding: 14px var(--spacing-md);
+  font-size: var(--font-size-xs);
+  font-weight: 700;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  border-bottom: 2px solid var(--border-color);
+  white-space: nowrap;
+  background: linear-gradient(180deg, var(--bg-elevated) 0%, var(--bg-warm) 100%);
+}
+
+.task-table th:first-child {
+  border-radius: var(--border-radius-sm) 0 0 0;
+}
+
+.task-table th:last-child {
+  border-radius: 0 var(--border-radius-sm) 0 0;
+}
+
+.task-table td {
+  padding: 14px var(--spacing-md);
+  border-bottom: 1px solid var(--border-color);
+  font-size: var(--font-size-sm);
+  color: var(--text-secondary);
+  transition: background-color 0.15s ease;
+}
+
+.task-table tbody tr:hover td {
+  background: rgba(255, 140, 66, 0.04);
+}
+
+.task-table tbody tr:last-child td:first-child {
+  border-radius: 0 0 0 var(--border-radius-sm);
+}
+
+.task-table tbody tr:last-child td:last-child {
+  border-radius: 0 0 var(--border-radius-sm) 0;
+}
+
+.task-name {
+  font-weight: 700;
+  color: var(--text-primary);
+  font-size: var(--font-size-md);
+}
+
+.points {
+  font-weight: 800;
+  color: var(--color-primary);
+}
+
+.final-points {
+  color: var(--color-success);
+  font-weight: 700;
+  font-size: var(--font-size-sm);
+}
+
+.task-actions {
+  display: flex;
+  gap: var(--spacing-sm);
+  align-items: center;
+}
+
+/* 任务卡片（学生端） */
+.task-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+  gap: var(--spacing-md);
+}
+
+.task-card {
+  display: flex;
+  flex-direction: column;
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius-xl);
+  padding: var(--spacing-lg);
+  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.task-card::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: var(--spacing-lg);
+  bottom: var(--spacing-lg);
+  width: 4px;
+  border-radius: 0 4px 4px 0;
+  background: var(--color-primary);
+}
+
+.task-card[data-status="pending"]::before {
+  background: var(--color-warning);
+}
+
+.task-card[data-status="submitted"]::before {
+  background: var(--color-accent);
+}
+
+.task-card[data-status="approved"]::before {
+  background: var(--color-success);
+}
+
+.task-card[data-status="rejected"]::before {
+  background: var(--color-error);
+}
+
+.task-card:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-md);
+}
+
+.task-card-title {
+  font-size: var(--font-size-lg);
+  font-weight: 800;
+  color: var(--text-primary);
+}
+
+.task-card-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+}
+
+.task-card-info {
+  display: flex;
+  gap: var(--spacing-lg);
+  color: var(--text-secondary);
+  font-size: var(--font-size-sm);
+}
+
+.task-card-info strong {
+  color: var(--text-primary);
+}
+
+.task-card-points {
+  font-size: var(--font-size-xl);
+  font-weight: 800;
+  color: var(--color-primary);
+  margin: var(--spacing-sm) 0;
+}
+
+.task-card-footer {
+  margin-top: var(--spacing-md);
+  display: flex;
+  gap: var(--spacing-sm);
+}
+
+/* 审批卡片 */
+.approval-card {
+  margin-bottom: var(--spacing-md);
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius-xl);
+  overflow: hidden;
+  padding: 0;
+}
+
+.approval-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+/* 任务信息区 */
+.approval-task-info {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  padding: var(--spacing-lg) var(--spacing-lg) var(--spacing-md);
+}
+
+.approval-task-left {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--spacing-md);
+  flex: 1;
+  min-width: 0;
+}
+
+.approval-task-icon {
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  background: linear-gradient(135deg, #FFF5EB, #FFEDD5);
+  border-radius: var(--border-radius-md);
+  flex-shrink: 0;
+  border: 1px solid #FED7AA;
+}
+
+.approval-task-detail {
+  flex: 1;
+  min-width: 0;
+}
+
+.approval-task-name {
+  font-size: var(--font-size-lg);
+  font-weight: 800;
+  color: var(--text-primary);
+  margin-bottom: 6px;
+  line-height: 1.3;
+}
+
+.approval-task-meta {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+  font-size: var(--font-size-sm);
+  color: var(--text-secondary);
+  font-weight: 600;
+}
+
+.approval-meta-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.approval-meta-label {
+  color: var(--text-muted);
+}
+
+.approval-meta-value {
+  color: var(--text-primary);
+  font-weight: 700;
+}
+
+.approval-meta-points {
+  color: var(--color-primary);
+  font-weight: 800;
+}
+
+.approval-meta-divider {
+  color: var(--border-color);
+  font-weight: 400;
+}
+
+.approval-task-time {
+  margin-top: 6px;
+  font-size: var(--font-size-xs);
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+/* 操作按钮区 */
+.approval-actions {
+  display: flex;
+  gap: 0;
+  border-top: 1px solid var(--border-color);
+}
+
+.approval-action-btn {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 14px 12px;
+  border: none;
+  background: transparent;
+  font-size: var(--font-size-sm);
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  position: relative;
+  color: var(--text-secondary);
+  font-family: inherit;
+}
+
+.approval-action-btn:not(:last-child)::after {
+  content: '';
+  position: absolute;
+  right: 0;
+  top: 20%;
+  bottom: 20%;
+  width: 1px;
+  background: var(--border-color);
+}
+
+.approval-action-btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  transform: none !important;
+}
+
+.approval-btn-icon {
+  font-size: 1.1rem;
+  line-height: 1;
+}
+
+.approval-btn-label {
+  font-weight: 800;
+}
+
+.approval-btn-points {
+  font-size: var(--font-size-xs);
+  color: var(--text-muted);
+  font-weight: 600;
+  background: rgba(0,0,0,0.04);
+  padding: 2px 8px;
+  border-radius: var(--border-radius-full);
+}
+
+/* 优秀按钮 */
+.approval-btn-excellent:hover:not(:disabled) {
+  background: linear-gradient(180deg, rgba(74, 222, 128, 0.08) 0%, rgba(74, 222, 128, 0.15) 100%);
+  color: #15803D;
+}
+
+.approval-btn-excellent:hover:not(:disabled) .approval-btn-points {
+  background: rgba(74, 222, 128, 0.15);
+  color: #15803D;
+}
+
+.approval-btn-excellent:active:not(:disabled) {
+  background: rgba(74, 222, 128, 0.2);
+}
+
+/* 良好按钮 */
+.approval-btn-good:hover:not(:disabled) {
+  background: linear-gradient(180deg, rgba(56, 189, 248, 0.08) 0%, rgba(56, 189, 248, 0.15) 100%);
+  color: #0369A1;
+}
+
+.approval-btn-good:hover:not(:disabled) .approval-btn-points {
+  background: rgba(56, 189, 248, 0.15);
+  color: #0369A1;
+}
+
+.approval-btn-good:active:not(:disabled) {
+  background: rgba(56, 189, 248, 0.2);
+}
+
+/* 驳回按钮 */
+.approval-btn-reject:hover:not(:disabled) {
+  background: linear-gradient(180deg, rgba(251, 113, 133, 0.08) 0%, rgba(251, 113, 133, 0.15) 100%);
+  color: #BE123C;
+}
+
+.approval-btn-reject:active:not(:disabled) {
+  background: rgba(251, 113, 133, 0.2);
+}
+
+/* ===== TaskCard 组件样式 ===== */
+.task-rating-box {
+  margin-top: var(--spacing-sm);
+  padding: 10px 14px;
+  background: linear-gradient(135deg, #F0FDF4 0%, #DCFCE7 100%);
+  border-radius: var(--border-radius-md);
+  font-size: var(--font-size-sm);
+  border: 1px solid #BBF7D0;
+  font-weight: 600;
+}
+
+.task-rating-points {
+  margin-left: var(--spacing-md);
+  font-weight: 800;
+  color: var(--color-success);
+}
+
+.task-reject-box {
+  margin-top: var(--spacing-sm);
+  padding: 10px 14px;
+  background: linear-gradient(135deg, #FFF1F2 0%, #FFE4E6 100%);
+  border-radius: var(--border-radius-md);
+  font-size: var(--font-size-sm);
+  color: var(--color-error);
+  border: 1px solid #FECDD3;
+  font-weight: 600;
+}
+
+.task-meta-time {
+  margin-top: var(--spacing-sm);
+  font-size: var(--font-size-xs);
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+/* ===== TaskForm 组件样式 ===== */
+.form-title {
+  margin-bottom: var(--spacing-md);
+  font-size: var(--font-size-lg);
+  font-weight: 800;
+  color: var(--text-primary);
+}
+
+.form-error-box {
+  margin-bottom: var(--spacing-sm);
+}
+
+.form-actions {
+  display: flex;
+  gap: var(--spacing-md);
+}
+
+/* ===== 任务类型选择器 ===== */
+.task-type-selector {
+  display: flex;
+  gap: var(--spacing-sm);
+  background: #F3F0ED;
+  border-radius: var(--border-radius-md);
+  padding: 4px;
+}
+
+.task-type-option {
+  flex: 1;
+  position: relative;
+  cursor: pointer;
+}
+
+.task-type-option input[type="radio"] {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.task-type-label {
+  display: block;
+  text-align: center;
+  padding: 10px 16px;
+  border: 2px solid transparent;
+  border-radius: var(--border-radius-sm);
+  font-weight: 700;
+  font-size: var(--font-size-sm);
+  color: #5C5650 !important;
+  transition: all 0.2s ease;
+  background: transparent;
+}
+
+.task-type-option.active .task-type-label {
+  border-color: transparent;
+  background: #FFFFFF;
+  color: #E66A20 !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.task-type-label:hover {
+  color: #E66A20 !important;
+}
+
+/* ===== 周期日期选择器 ===== */
+.weekday-selector {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.weekday-btn {
+  width: 52px;
+  height: 40px;
+  border: 2px solid #E5E0DB;
+  border-radius: var(--border-radius-md);
+  background: #FFFFFF;
+  font-size: var(--font-size-sm);
+  font-weight: 700;
+  color: #5C5650 !important;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: inherit;
+}
+
+.weekday-btn:hover {
+  border-color: var(--color-primary);
+  color: #E66A20 !important;
+}
+
+.weekday-btn.selected {
+  border-color: var(--color-primary);
+  background: linear-gradient(135deg, #FFF5EB 0%, #FFEDD5 100%);
+  color: #E66A20 !important;
+}
+
+/* ===== 任务类型标签 ===== */
+.task-type-badge {
+  display: inline-block;
+  padding: 2px 10px;
+  border-radius: var(--border-radius-full);
+  font-size: var(--font-size-xs);
+  font-weight: 700;
+  letter-spacing: 0.3px;
+}
+
+.task-type-badge.type-temporary {
+  background: #F1F5F9;
+  color: #64748B;
+}
+
+.task-type-badge.type-daily {
+  background: #DBEAFE;
+  color: #2563EB;
+}
+
+.task-type-badge.type-periodic {
+  background: #FEF3C7;
+  color: #D97706;
+}
+
+.task-weekdays-hint {
+  display: block;
+  font-size: var(--font-size-xs);
+  color: var(--text-muted);
+  margin-top: 2px;
+}
+
+/* ===== 任务卡片中的类型与周期 ===== */
+.task-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: var(--spacing-sm);
+}
+
+.task-card-header .task-type-badge {
+  font-size: var(--font-size-xs);
+}
+
+.task-card-weekdays {
+  font-size: var(--font-size-xs);
+  color: var(--text-muted);
+  font-weight: 600;
+  padding: 4px 10px;
+  background: rgba(217, 119, 6, 0.06);
+  border-radius: var(--border-radius-sm);
+  border: 1px solid rgba(217, 119, 6, 0.15);
+}
+
+/* ===== WithdrawForm 组件样式 ===== */
+.withdraw-balance-label {
+  font-size: var(--font-size-md);
+  color: var(--text-primary);
+}
+
+.withdraw-balance-value {
+  color: var(--color-primary);
+}
+
+/* ===== ApprovalForm 组件样式 ===== */
+.approval-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--spacing-sm);
+}
+
+.approval-title {
+  font-size: var(--font-size-lg);
+  font-weight: 800;
+  color: var(--text-primary);
+}
+
+.approval-meta {
+  display: flex;
+  gap: var(--spacing-xl);
+  color: var(--text-secondary);
+  font-size: var(--font-size-sm);
+  margin-bottom: var(--spacing-sm);
+  font-weight: 600;
+}
+
+.approval-meta strong {
+  color: var(--text-primary);
+}
+

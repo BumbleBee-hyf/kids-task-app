@@ -1,0 +1,124 @@
+/* === 覆盖 @play-kit/games GiftBox 组件为3D红金宝箱 === */
+
+/* 游戏区 */
+.pk-game.pk-gb {
+  --pk-scale: 1;
+  background: transparent !important;
+  padding: 0 !important;
+}
+
+.pk-gb__row {
+  gap: 28px !important;
+  justify-content: center !important;
+  padding: 24px 0 !important;
+}
+
+/* 隐藏原始结构 */
+.pk-gb__box {
+  --box-w: 110px !important;
+  --box-h: 90px !important;
+  background: none !important;
+  border: none !important;
+  position: relative;
+  cursor: pointer;
+}
+
+.pk-gb__body,
+.pk-gb__ribbon-h,
+.pk-gb__ribbon-v,
+.pk-gb__lid,
+.pk-gb__bow,
+.pk-gb__reveal {
+  display: none !important;
+}
+
+/* ===== 3D红金宝箱 ===== */
+.pk-gb__box::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  
+  /* 箱体 - 红色 */
+  background: 
+    /* 星星装饰 */
+    radial-gradient(circle at 50% 45%, rgba(255,215,0,0.9) 0%, rgba(255,215,0,0.9) 8%, transparent 9%),
+    radial-gradient(circle at 50% 45%, #B8860B 0%, #B8860B 12%, transparent 13%),
+    /* 竖金条 */
+    linear-gradient(90deg, transparent 42%, #D4A843 42%, #F5D76E 50%, #D4A843 58%, transparent 58%),
+    /* 横金条 */
+    linear-gradient(180deg, transparent 38%, #D4A843 38%, #F5D76E 46%, #D4A843 54%, transparent 54%),
+    /* 箱体底色 */
+    linear-gradient(180deg, #E85D4E 0%, #C73E3E 40%, #A82D2D 100%);
+  
+  border: 3px solid #D4A843;
+  border-radius: 4px 4px 6px 6px;
+  box-shadow: 
+    inset 0 2px 4px rgba(255,255,255,0.2),
+    inset 0 -2px 4px rgba(0,0,0,0.1),
+    0 6px 16px rgba(0,0,0,0.15);
+}
+
+/* 盖子 - 拱形金色 */
+.pk-gb__box::after {
+  content: '';
+  position: absolute;
+  top: -18px;
+  left: -3px;
+  right: -3px;
+  height: 36px;
+  z-index: 3;
+  background: linear-gradient(180deg, #F8E08E 0%, #E8C95A 50%, #D4A843 100%);
+  border: 3px solid #C9A02F;
+  border-bottom: none;
+  border-radius: 55px 55px 4px 4px;
+  box-shadow: 
+    inset 0 2px 3px rgba(255,255,255,0.3),
+    0 3px 8px rgba(0,0,0,0.12);
+}
+
+/* 底部阴影 */
+.pk-gb__box .pk-gb__reveal {
+  display: block !important;
+  position: absolute !important;
+  bottom: -10px !important;
+  left: 50% !important;
+  transform: translateX(-50%) !important;
+  width: 80% !important;
+  height: 10px !important;
+  background: radial-gradient(ellipse, rgba(0,0,0,0.1) 0%, transparent 70%) !important;
+  border-radius: 50% !important;
+}
+
+/* hover 效果 */
+.pk-gb__box:hover {
+  transform: translateY(-4px);
+}
+
+.pk-gb__box:hover::before {
+  box-shadow: 
+    inset 0 2px 4px rgba(255,255,255,0.2),
+    inset 0 -2px 4px rgba(0,0,0,0.1),
+    0 10px 24px rgba(0,0,0,0.2);
+}
+
+/* 状态标签 */
+.pk-state-badge {
+  background: rgba(255,255,255,0.9) !important;
+  border: 1px solid var(--border-color) !important;
+  color: var(--text-secondary) !important;
+  font-weight: 700 !important;
+  border-radius: 999px !important;
+  padding: 4px 12px !important;
+  font-size: var(--font-size-xs) !important;
+}
+
+/* 隐藏原提示 */
+.pk-gb__cta {
+  display: none !important;
+}
+
+/* 通用字体 */
+[class*="play-kit"] {
+  font-family: var(--font-family) !important;
+}
