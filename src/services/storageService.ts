@@ -7,6 +7,7 @@ import type {
   Voucher,
   WithdrawRequest,
   PointRecord,
+  LotteryConfig,
 } from '../types';
 
 const API_BASE = '/api';
@@ -219,6 +220,22 @@ export const withdrawStorage = {
     } catch {
       return null;
     }
+  },
+};
+
+// ============ 抽奖配置相关 ============
+
+export const lotteryConfigStorage = {
+  getConfig: async (): Promise<LotteryConfig> => {
+    return request<LotteryConfig>('GET', '/lottery/config');
+  },
+
+  saveConfig: async (data: Partial<LotteryConfig>): Promise<LotteryConfig> => {
+    return request<LotteryConfig>('PUT', '/lottery/config', data);
+  },
+
+  resetConfig: async (): Promise<LotteryConfig> => {
+    return request<LotteryConfig>('POST', '/lottery/config/reset');
   },
 };
 

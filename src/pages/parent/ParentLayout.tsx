@@ -17,6 +17,7 @@ export default function ParentLayout() {
     { to: '/parent/dashboard', icon: '🏠', label: '首页' },
     { to: '/parent/tasks', icon: '📝', label: '任务管理' },
     { to: '/parent/approvals', icon: '✅', label: '审批中心' },
+    { to: '/parent/lottery-config', icon: '🎰', label: '抽奖配置' },
   ];
 
   return (

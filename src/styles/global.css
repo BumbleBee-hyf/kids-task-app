@@ -127,6 +127,7 @@ input, select, textarea {
   font-size: var(--font-size-md);
   outline: none;
   color: #2D2A26;
+  background: #FFF8F0;
 }
 
 select option {

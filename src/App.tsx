@@ -17,6 +17,7 @@ import ParentLayout from './pages/parent/ParentLayout';
 import ParentDashboard from './pages/parent/ParentDashboard';
 import TaskManagementPage from './pages/parent/TaskManagementPage';
 import ApprovalPage from './pages/parent/ApprovalPage';
+import LotteryConfigPage from './pages/parent/LotteryConfigPage';
 
 export default function App() {
   return (
@@ -57,6 +58,7 @@ export default function App() {
                     <Route path="dashboard" element={<ParentDashboard />} />
                     <Route path="tasks" element={<TaskManagementPage />} />
                     <Route path="approvals" element={<ApprovalPage />} />
+                    <Route path="lottery-config" element={<LotteryConfigPage />} />
                     <Route index element={<Navigate to="dashboard" replace />} />
                   </Route>
 

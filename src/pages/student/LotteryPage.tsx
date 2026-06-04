@@ -12,7 +12,7 @@ type GameType = 'box' | 'wheel';
 
 export default function LotteryPage() {
   const { user } = useAuth();
-  const { pointCost, todayCount, drawBox, spinWheel, refreshCount } = useLottery();
+  const { pointCost, todayCount, drawBox, spinWheel, refreshCount, config, refreshConfig } = useLottery();
   const { balance: pointBalance, refreshBalance } = usePoints();
   const { refreshData: refreshVouchers } = useVouchers();
   const [activeGame, setActiveGame] = useState<GameType>('box');
@@ -21,8 +21,9 @@ export default function LotteryPage() {
     if (user) {
       refreshBalance(user.id);
       refreshCount();
+      refreshConfig();
     }
-  }, [user, refreshBalance, refreshCount]);
+  }, [user, refreshBalance, refreshCount, refreshConfig]);
 
   // Tab切换时刷新数据
   useEffect(() => {
@@ -33,6 +34,24 @@ export default function LotteryPage() {
   }, [activeGame]);
 
   const canDraw = pointBalance >= pointCost;
+
+  // 从后端配置中获取奖品列表
+  const boxPrizes = (config?.boxPrizes || []).map((p, i) => ({
+    id: String(i + 1),
+    label: p.label,
+    amount: p.amount,
+    weight: p.weight,
+    color: p.color,
+    type: p.type,
+  }));
+
+  const wheelPrizes = (config?.wheelSegments || []).map(p => ({
+    label: p.label,
+    amount: p.amount,
+    weight: p.weight,
+    color: p.color,
+    type: p.type,
+  }));
 
   // 抽箱子中奖回调
   const handleBoxWin = useCallback(async (_prize: { amount: number }) => {
@@ -92,29 +111,13 @@ export default function LotteryPage() {
       {/* 游戏区域 */}
       {activeGame === 'box' ? (
         <LuckyBox
-          prizes={[
-            { id: '1', label: '1元', amount: 1, weight: 35, color: '#FFD700', type: 'money' },
-            { id: '2', label: '2元', amount: 2, weight: 30, color: '#4ADE80', type: 'money' },
-            { id: '3', label: '5元', amount: 5, weight: 20, color: '#38BDF8', type: 'money' },
-            { id: '4', label: '恶搞', amount: 0, weight: 10, color: '#FB923C', type: 'joke' },
-            { id: '5', label: '10元', amount: 10, weight: 5, color: '#A78BFA', type: 'money' },
-          ]}
+          prizes={boxPrizes}
           onWin={handleBoxWin}
           disabled={!canDraw}
         />
       ) : (
         <LuckyWheel
-          prizes={[
-            { label: '100元', amount: 100, weight: 0.5, color: '#FF2D55', type: 'money' },
-            { label: '1元', amount: 1, weight: 37, color: '#FBBF24', type: 'money' },
-            { label: '2元', amount: 2, weight: 25, color: '#FCD34D', type: 'money' },
-            { label: '1元', amount: 1, weight: 37, color: '#4ADE80', type: 'money' },
-            { label: '5元', amount: 5, weight: 12.5, color: '#2DD4BF', type: 'money' },
-            { label: '恶搞', amount: 0, weight: 12.5, color: '#FB923C', type: 'joke' },
-            { label: '2元', amount: 2, weight: 25, color: '#818CF8', type: 'money' },
-            { label: '10元', amount: 10, weight: 12.5, color: '#A78BFA', type: 'money' },
-            { label: '1元', amount: 1, weight: 37, color: '#38BDF8', type: 'money' },
-          ]}
+          prizes={wheelPrizes}
           onSpinEnd={handleWheelEnd}
           disabled={!canDraw}
         />

@@ -43,6 +43,45 @@ function weightedRandom(items) {
   return items[items.length - 1];
 }
 
+// 默认抽奖配置
+const DEFAULT_BOX_PRIZES = [
+  { amount: 1, weight: 35, type: 'money', label: '1元', color: '#FFD700' },
+  { amount: 2, weight: 30, type: 'money', label: '2元', color: '#4ADE80' },
+  { amount: 5, weight: 20, type: 'money', label: '5元', color: '#38BDF8' },
+  { amount: 0, weight: 10, type: 'joke', label: '恶搞', color: '#FB923C' },
+  { amount: 10, weight: 5, type: 'money', label: '10元', color: '#A78BFA' },
+];
+
+const DEFAULT_WHEEL_SEGMENTS = [
+  { amount: 100, weight: 0.5, type: 'money', label: '100元', color: '#FF2D55' },
+  { amount: 1, weight: 37, type: 'money', label: '1元', color: '#FBBF24' },
+  { amount: 2, weight: 25, type: 'money', label: '2元', color: '#FCD34D' },
+  { amount: 1, weight: 37, type: 'money', label: '1元', color: '#4ADE80' },
+  { amount: 5, weight: 12.5, type: 'money', label: '5元', color: '#2DD4BF' },
+  { amount: 0, weight: 12.5, type: 'joke', label: '恶搞', color: '#FB923C' },
+  { amount: 2, weight: 25, type: 'money', label: '2元', color: '#818CF8' },
+  { amount: 10, weight: 12.5, type: 'money', label: '10元', color: '#A78BFA' },
+  { amount: 1, weight: 37, type: 'money', label: '1元', color: '#38BDF8' },
+];
+
+function getEffectiveBoxPrizes() {
+  const config = db.lotteryConfig;
+  if (config && config.boxPrizes && config.boxPrizes.length > 0) return config.boxPrizes;
+  return DEFAULT_BOX_PRIZES;
+}
+
+function getEffectiveWheelSegments() {
+  const config = db.lotteryConfig;
+  if (config && config.wheelSegments && config.wheelSegments.length > 0) return config.wheelSegments;
+  return DEFAULT_WHEEL_SEGMENTS;
+}
+
+function getEffectiveLotteryCost() {
+  const config = db.lotteryConfig;
+  if (config && config.pointCost && config.pointCost > 0) return config.pointCost;
+  return LOTTERY_POINT_COST;
+}
+
 // ============ 工具函数 ============
 
 function generateId() {
@@ -272,6 +311,10 @@ if (!db.lotteryRecords) {
 }
 if (!db.checkins) {
   db.checkins = [];
+  saveDb(db);
+}
+if (!db.lotteryConfig) {
+  db.lotteryConfig = {};
   saveDb(db);
 }
 
@@ -776,6 +819,89 @@ const server = http.createServer(async (req, res) => {
       return;
     }
 
+    // ============ Lottery Config ============
+    // 获取抽奖配置（前端展示用）
+    if (pathname === '/api/lottery/config' && method === 'GET') {
+      const config = db.lotteryConfig || {};
+      jsonResponse(res, 200, {
+        boxPrizes: getEffectiveBoxPrizes(),
+        wheelSegments: getEffectiveWheelSegments(),
+        pointCost: getEffectiveLotteryCost(),
+        _customized: !!(config.boxPrizes || config.wheelSegments || config.pointCost),
+      });
+      return;
+    }
+
+    // 保存抽奖配置（家长端）
+    if (pathname === '/api/lottery/config' && method === 'PUT') {
+      const body = await parseBody(req);
+      // 验证数据
+      if (body.boxPrizes) {
+        if (!Array.isArray(body.boxPrizes) || body.boxPrizes.length === 0) {
+          jsonResponse(res, 400, { error: '抽箱子奖品不能为空' });
+          return;
+        }
+        for (const p of body.boxPrizes) {
+          if (typeof p.amount !== 'number' || typeof p.weight !== 'number' || p.weight <= 0) {
+            jsonResponse(res, 400, { error: '每个奖品必须有有效的 amount 和 weight' });
+            return;
+          }
+          if (!p.type || !['money', 'joke'].includes(p.type)) {
+            jsonResponse(res, 400, { error: '奖品类型必须是 money 或 joke' });
+            return;
+          }
+        }
+      }
+      if (body.wheelSegments) {
+        if (!Array.isArray(body.wheelSegments) || body.wheelSegments.length === 0) {
+          jsonResponse(res, 400, { error: '大转盘奖品不能为空' });
+          return;
+        }
+        for (const p of body.wheelSegments) {
+          if (typeof p.amount !== 'number' || typeof p.weight !== 'number' || p.weight <= 0) {
+            jsonResponse(res, 400, { error: '每个奖品必须有有效的 amount 和 weight' });
+            return;
+          }
+          if (!p.type || !['money', 'joke'].includes(p.type)) {
+            jsonResponse(res, 400, { error: '奖品类型必须是 money 或 joke' });
+            return;
+          }
+        }
+      }
+      if (body.pointCost !== undefined) {
+        if (typeof body.pointCost !== 'number' || body.pointCost <= 0) {
+          jsonResponse(res, 400, { error: '抽奖积分消耗必须大于0' });
+          return;
+        }
+      }
+
+      if (!db.lotteryConfig) db.lotteryConfig = {};
+      if (body.boxPrizes) db.lotteryConfig.boxPrizes = body.boxPrizes;
+      if (body.wheelSegments) db.lotteryConfig.wheelSegments = body.wheelSegments;
+      if (body.pointCost !== undefined) db.lotteryConfig.pointCost = body.pointCost;
+      db.lotteryConfig.updatedAt = now();
+
+      saveDb(db);
+      jsonResponse(res, 200, {
+        boxPrizes: getEffectiveBoxPrizes(),
+        wheelSegments: getEffectiveWheelSegments(),
+        pointCost: getEffectiveLotteryCost(),
+      });
+      return;
+    }
+
+    // 重置抽奖配置为默认值（家长端）
+    if (pathname === '/api/lottery/config/reset' && method === 'POST') {
+      db.lotteryConfig = {};
+      saveDb(db);
+      jsonResponse(res, 200, {
+        boxPrizes: getEffectiveBoxPrizes(),
+        wheelSegments: getEffectiveWheelSegments(),
+        pointCost: getEffectiveLotteryCost(),
+      });
+      return;
+    }
+
     // ============ Lottery ============
     if (pathname === '/api/lottery/today' && method === 'GET') {
       const today = new Date().toISOString().split('T')[0];
@@ -794,26 +920,29 @@ const server = http.createServer(async (req, res) => {
         .filter(p => p.studentId === studentId)
         .reduce((sum, p) => sum + p.amount, 0);
 
-      if (pointBalance < LOTTERY_POINT_COST) {
-        jsonResponse(res, 400, { error: `积分不足，需要 ${LOTTERY_POINT_COST} 积分，当前余额 ${pointBalance} 积分` });
+      const effectiveCost = getEffectiveLotteryCost();
+      if (pointBalance < effectiveCost) {
+        jsonResponse(res, 400, { error: `积分不足，需要 ${effectiveCost} 积分，当前余额 ${pointBalance} 积分` });
         return;
       }
 
-      // 2. 根据类型决定奖品
+      // 2. 根据类型决定奖品（使用动态配置）
       let prizeAmount;
       let prizeType = 'money';
       let jokeEmoji;
       let segmentIndex;
       if (type === 'wheel') {
-        const prize = weightedRandom(WHEEL_SEGMENTS);
-        segmentIndex = WHEEL_SEGMENTS.indexOf(prize);
+        const segments = getEffectiveWheelSegments();
+        const prize = weightedRandom(segments);
+        segmentIndex = segments.indexOf(prize);
         prizeAmount = prize.amount;
         prizeType = prize.type;
         if (prize.type === 'joke') {
           jokeEmoji = JOKE_PRIZES[Math.floor(Math.random() * JOKE_PRIZES.length)];
         }
       } else {
-        const prize = weightedRandom(BOX_PRIZES);
+        const prizes = getEffectiveBoxPrizes();
+        const prize = weightedRandom(prizes);
         prizeAmount = prize.amount;
         prizeType = prize.type;
         if (prize.type === 'joke') {
@@ -825,7 +954,7 @@ const server = http.createServer(async (req, res) => {
       db.points.push({
         id: generateId(),
         studentId,
-        amount: -LOTTERY_POINT_COST,
+        amount: -effectiveCost,
         source: 'lottery_cost',
         description: type === 'wheel' ? '大转盘抽奖消耗' : '抽箱子抽奖消耗',
         createdAt: now(),
@@ -860,7 +989,8 @@ const server = http.createServer(async (req, res) => {
         amount: prizeAmount,
         jokeEmoji,
         segmentIndex,
-        pointBalance: pointBalance - LOTTERY_POINT_COST,
+        pointBalance: pointBalance - effectiveCost,
+        pointCost: effectiveCost,
       });
       return;
     }

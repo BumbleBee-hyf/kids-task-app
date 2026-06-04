@@ -69,7 +69,22 @@ export interface WithdrawRequest {
 }
 
 // ============ 抽奖配置 ============
-export const LOTTERY_POINT_COST = 10; // 每次抽奖消耗的积分数
+export const LOTTERY_POINT_COST = 10; // 每次抽奖消耗的积分数（默认值）
+
+export interface LotteryPrizeItem {
+  amount: number;
+  weight: number;
+  type: 'money' | 'joke';
+  label: string;
+  color: string;
+}
+
+export interface LotteryConfig {
+  boxPrizes: LotteryPrizeItem[];
+  wheelSegments: LotteryPrizeItem[];
+  pointCost: number;
+  _customized?: boolean;
+}
 
 // ============ 抽奖记录 ============
 export interface LotteryRecord {
