@@ -13,8 +13,6 @@ import styles from '../../styles/MathBoss.module.css';
 type AnswerState = 'input' | 'correct' | 'wrong' | 'choosing' | 'wrongFeedback';
 type AnimPhase = 'idle' | 'playerAttack' | 'bossHurt' | 'bossDefeat' | 'bossAttack' | 'playerHurt' | 'playerDefeat' | 'bossEntrance' | 'shadowStrike' | 'risingDragon';
 
-const PARTICLE_COLORS = ['#FFD700', '#FF8C42', '#FB7185', '#4ADE80', '#60A5FA', '#A78BFA', '#FBBF24'];
-
 // Boss专属弹幕颜色
 const BOSS_PROJ_COLORS: Record<string, string> = {
   skeleton: '#4ADE80', bat: '#A855F7', treant: '#84CC16', knight: '#60A5FA',
@@ -44,7 +42,7 @@ export default function MathBossPage() {
     bossHearts, playerHearts, bossesDefeated,
     comboCount, maxCombo, reward,
     todayPlayCount, todayBestScore,
-    hiddenUnlocked, hiddenTheme, unlockedSkins, equippedSkin, equipSkin, hiddenTodayPlayCount, hiddenTodayBestScore,
+    hiddenUnlocked, hiddenTheme, unlockedSkins, equippedSkin, equipSkin, hiddenTodayPlayCount,
     startGame, checkAnswer, applyAttack, advanceToNextBoss, fetchNextQuestion, finishGame, resetGame,
     refreshStatus, refreshHiddenStatus, refreshSkins,
   } = useMathBoss();
@@ -61,7 +59,7 @@ export default function MathBossPage() {
   const [showDefeatBurst, setShowDefeatBurst] = useState(false);
   const [defeatedBossName, setDefeatedBossName] = useState('');
   const [showUnlockCelebration, setShowUnlockCelebration] = useState(false);
-  const [isFinishing, setIsFinishing] = useState(false);
+  const [isFinishing] = useState(false);
   // 技能选择
   const [availableSkills, setAvailableSkills] = useState<AttackType[]>([]);
   const [lastDamage, setLastDamage] = useState(1);
@@ -140,9 +138,10 @@ export default function MathBossPage() {
       setShakeScreen(true);
 
       // Boss攻击浮动伤害
-      const isHardBoss = !isHidden && currentBossIndex >= 7;
+      const isHardBoss = gameMode !== 'hidden' && currentBossIndex >= 7;
       const heartLoss = isHardBoss ? 2 : 1;
-      const projColor = BOSS_PROJ_COLORS[currentQuestion?.icon ?? ''] || '#EF4444';
+      const boss = bossArray[currentBossIndex];
+      const projColor = BOSS_PROJ_COLORS[boss?.icon ?? ''] || '#EF4444';
       setBossHitColor(projColor);
       setFloatingDmg({ value: heartLoss, color: projColor, x: 30, y: 40 });
       setTimeout(() => setFloatingDmg(null), 1000);

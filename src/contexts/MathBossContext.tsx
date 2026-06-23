@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useState, useCallback, useRef } from 'react';
 import { mathBossStorage } from '../services/storageService';
 import { usePoints } from './PointsContext';
-import { MATH_BOSSES, MINECRAFT_BOSSES, PVZ_BOSSES, TANK_BOSSES, HIDDEN_BOSS_MAP, PLAYER_MAX_HEARTS, MATH_BOSS_REWARDS } from '../types';
+import { MATH_BOSSES, MINECRAFT_BOSSES, HIDDEN_BOSS_MAP, PLAYER_MAX_HEARTS, MATH_BOSS_REWARDS } from '../types';
 import type { HiddenTheme } from '../types';
 
 export type GamePhase = 'idle' | 'playing' | 'result';
@@ -58,6 +58,7 @@ interface MathBossContextType {
   resetGame: () => void;
   refreshStatus: (studentId: string) => Promise<void>;
   refreshHiddenStatus: (studentId: string) => Promise<void>;
+  refreshSkins: (studentId: string) => Promise<void>;
 }
 
 const MathBossContext = createContext<MathBossContextType | null>(null);
