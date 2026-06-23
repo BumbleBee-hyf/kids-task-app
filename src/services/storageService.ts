@@ -300,6 +300,7 @@ export const mathBossStorage = {
     unlocked: boolean;
     todayPlayCount: number;
     todayBestScore: number;
+    todayTheme: 'minecraft' | 'pvz' | 'tank';
   }> => {
     return request('GET', `/math-boss/hidden/status/${studentId}`);
   },

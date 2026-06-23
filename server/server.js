@@ -8,6 +8,17 @@ const DB_PATH = path.join(__dirname, 'db.json');
 const PORT = 3001;
 const LOTTERY_POINT_COST = 10; // 每次抽奖消耗的积分数
 
+// 简单确定性哈希（用于基于日期+学生ID生成当天随机主题）
+function hashCode(str) {
+  let hash = 0;
+  for (let i = 0; i < str.length; i++) {
+    const char = str.charCodeAt(i);
+    hash = ((hash << 5) - hash) + char;
+    hash |= 0;
+  }
+  return hash;
+}
+
 // 抽箱子奖品配置（加权随机）
 const BOX_PRIZES = [
   { amount: 1, weight: 35, type: 'money' },
@@ -1140,7 +1151,7 @@ const server = http.createServer(async (req, res) => {
       return;
     }
 
-    // 获取隐藏模式状态（每日解锁：今天通关10个且血量>3才能解锁）
+    // 获取隐藏模式状态（每日解锁：今天通关10个且血量>3才能解锁，当天随机分配一个主题）
     const hiddenStatusMatch = pathname.match(/^\/api\/math-boss\/hidden\/status\/([^/]+)$/);
     if (hiddenStatusMatch && method === 'GET') {
       const studentId = hiddenStatusMatch[1];
@@ -1155,10 +1166,16 @@ const server = http.createServer(async (req, res) => {
       );
       const bestBosses = todayRecords.reduce((best, r) => Math.max(best, r.bossesDefeated), 0);
 
+      // 基于日期确定性随机分配主题（同一天同一个学生得到同一个主题）
+      const themes = ['minecraft', 'pvz', 'tank'];
+      const themeIndex = (hashCode(today + studentId) % themes.length);
+      const todayTheme = themes[Math.abs(themeIndex)];
+
       jsonResponse(res, 200, {
         unlocked: todayCleared,
         todayPlayCount: todayRecords.length,
         todayBestScore: bestBosses,
+        todayTheme,
       });
       return;
     }

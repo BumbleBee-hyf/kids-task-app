@@ -243,8 +243,80 @@
   min-height: 200px;
 }
 
+/* ===== 氛围浮动粒子 ===== */
+.ambientParticle {
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 1;
+  opacity: var(--ambient-opacity, 0.2);
+  width: var(--ambient-size, 3px);
+  height: var(--ambient-size, 3px);
+  background: var(--ambient-color, rgba(255, 215, 0, 0.6));
+  box-shadow: 0 0 6px var(--ambient-color, rgba(255, 215, 0, 0.3));
+  animation: ambientFloat var(--ambient-duration, 6s) ease-in-out var(--ambient-delay, 0s) infinite,
+             ambientSway var(--ambient-sway-duration, 4s) ease-in-out var(--ambient-delay, 0s) infinite;
+}
+
+@keyframes ambientFloat {
+  0% { transform: translateY(0); opacity: 0; }
+  10% { opacity: var(--ambient-opacity, 0.2); }
+  90% { opacity: var(--ambient-opacity, 0.2); }
+  100% { transform: translateY(-120px); opacity: 0; }
+}
+
+@keyframes ambientSway {
+  0%, 100% { margin-left: 0; }
+  25% { margin-left: 8px; }
+  75% { margin-left: -8px; }
+}
+
+/* ===== 能量波 ===== */
+.ambientWave {
+  position: absolute;
+  left: -10%;
+  width: 120%;
+  height: 2px;
+  pointer-events: none;
+  z-index: 1;
+  opacity: 0;
+  background: linear-gradient(90deg, transparent 0%, var(--ambient-color, rgba(255, 215, 0, 0.15)) 30%, var(--ambient-color, rgba(255, 215, 0, 0.3)) 50%, var(--ambient-color, rgba(255, 215, 0, 0.15)) 70%, transparent 100%);
+  animation: energyWave var(--ambient-wave-duration, 8s) ease-in-out var(--ambient-delay, 0s) infinite;
+}
+
+@keyframes energyWave {
+  0% { top: 110%; opacity: 0; }
+  5% { opacity: 0.5; }
+  90% { opacity: 0.3; }
+  100% { top: -10%; opacity: 0; }
+}
+
 .battleStage.shake {
   animation: screenShake 0.4s ease;
+}
+
+.battleStage.shakeLight {
+  animation: shakeLight 0.3s ease;
+}
+
+.battleStage.shakeMedium {
+  animation: shakeMedium 0.4s ease;
+}
+
+.battleStage.shakeHeavy {
+  animation: shakeHeavy 0.5s ease;
+}
+
+.battleStage.shakeVertical {
+  animation: shakeVertical 0.4s ease;
+}
+
+.battleStage.zoomPulse {
+  animation: zoomPulse 0.3s ease;
+}
+
+.battleStage.chromaticFlash {
+  animation: chromaticFlash 0.3s ease;
 }
 
 @keyframes screenShake {
@@ -253,6 +325,58 @@
   40% { transform: translateX(6px); }
   60% { transform: translateX(-4px); }
   80% { transform: translateX(4px); }
+}
+
+@keyframes shakeLight {
+  0%, 100% { transform: translate(0, 0); }
+  20% { transform: translate(-3px, 1px); }
+  40% { transform: translate(3px, -1px); }
+  60% { transform: translate(-2px, 1px); }
+  80% { transform: translate(2px, 0); }
+}
+
+@keyframes shakeMedium {
+  0%, 100% { transform: translate(0, 0); }
+  15% { transform: translate(-8px, 3px); }
+  30% { transform: translate(7px, -2px); }
+  45% { transform: translate(-6px, 2px); }
+  60% { transform: translate(5px, -1px); }
+  75% { transform: translate(-3px, 1px); }
+  90% { transform: translate(2px, 0); }
+}
+
+@keyframes shakeHeavy {
+  0%, 100% { transform: translate(0, 0); }
+  10% { transform: translate(-12px, 5px); }
+  20% { transform: translate(10px, -4px); }
+  30% { transform: translate(-8px, 6px); }
+  40% { transform: translate(9px, -3px); }
+  50% { transform: translate(-7px, 4px); }
+  60% { transform: translate(6px, -2px); }
+  70% { transform: translate(-4px, 2px); }
+  80% { transform: translate(3px, -1px); }
+  90% { transform: translate(-1px, 0); }
+}
+
+@keyframes shakeVertical {
+  0%, 100% { transform: translateY(0); }
+  20% { transform: translateY(-8px); }
+  40% { transform: translateY(6px); }
+  60% { transform: translateY(-4px); }
+  80% { transform: translateY(2px); }
+}
+
+@keyframes zoomPulse {
+  0% { transform: scale(1); }
+  30% { transform: scale(1.03); }
+  100% { transform: scale(1); }
+}
+
+@keyframes chromaticFlash {
+  0% { filter: none; }
+  20% { filter: hue-rotate(30deg) saturate(2); text-shadow: -2px 0 #ff0000, 2px 0 #00ffff; }
+  50% { filter: hue-rotate(-20deg) saturate(1.5); text-shadow: 1px 0 #ff0000, -1px 0 #00ffff; }
+  100% { filter: none; }
 }
 
 /* 战斗双方布局 */
@@ -333,11 +457,53 @@
   animation: heartBreak 0.5s ease;
 }
 
+/* 心碎特效 — 裂纹+碎裂 */
+.heart.heartCracking {
+  animation: heartCrack 0.3s ease forwards;
+}
+
+.heart.heartShattering {
+  animation: heartShatter 0.4s ease forwards;
+}
+
 @keyframes heartBreak {
   0% { transform: scale(1); filter: none; }
   30% { transform: scale(1.5); filter: brightness(2); }
   60% { transform: scale(0.6); filter: grayscale(1); }
   100% { transform: scale(0.8); filter: grayscale(1) brightness(0.3); }
+}
+
+@keyframes heartCrack {
+  0% { transform: scale(1); filter: none; }
+  30% { transform: scale(1.3); filter: brightness(2.5) drop-shadow(0 0 6px rgba(251, 113, 133, 0.8)); }
+  60% { transform: scale(1.1); filter: brightness(1.5) drop-shadow(0 0 3px rgba(251, 113, 133, 0.5)); }
+  100% { transform: scale(1.2); filter: brightness(2) drop-shadow(0 0 8px rgba(251, 113, 133, 1)); }
+}
+
+@keyframes heartShatter {
+  0% { transform: scale(1.2); filter: brightness(2); opacity: 1; }
+  40% { transform: scale(1.6); filter: brightness(3); opacity: 1; }
+  100% { transform: scale(0.4); filter: grayscale(1) brightness(0.3); opacity: 1; }
+}
+
+/* 最后1滴血脉冲 */
+.heart.lastHeart {
+  animation: lastHeartPulse 0.8s ease-in-out infinite;
+}
+
+@keyframes lastHeartPulse {
+  0%, 100% { transform: scale(1); filter: drop-shadow(0 0 4px rgba(239, 68, 68, 0.5)); }
+  50% { transform: scale(1.15); filter: drop-shadow(0 0 10px rgba(239, 68, 68, 0.9)) brightness(1.3); }
+}
+
+/* Boss狂暴光环 */
+.enragedBoss {
+  animation: enragedAura 1s ease-in-out infinite;
+}
+
+@keyframes enragedAura {
+  0%, 100% { filter: drop-shadow(0 0 12px rgba(239, 68, 68, 0.4)) brightness(1); }
+  50% { filter: drop-shadow(0 0 24px rgba(239, 68, 68, 0.8)) brightness(1.2); }
 }
 
 /* ===== Boss角色 ===== */
@@ -409,6 +575,85 @@
   60% { transform: scale(0.9) rotate(-2deg); filter: brightness(1.2); }
   80% { transform: scale(1.05) rotate(0); filter: brightness(1); }
   100% { transform: scale(1) rotate(0); opacity: 1; filter: brightness(1); }
+}
+
+/* ===== Boss出场蓄力特效 ===== */
+.bossEntranceGather {
+  position: absolute;
+  right: 15%;
+  top: 50%;
+  transform: translate(0, -50%);
+  pointer-events: none;
+  z-index: 8;
+  width: 80px;
+  height: 80px;
+}
+
+.bossEntranceOrb {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  animation: gatherOrb 0.6s ease-in forwards;
+}
+
+@keyframes gatherOrb {
+  0% { transform: translate(var(--orb-start-x), var(--orb-start-y)) scale(0.3); opacity: 0; }
+  40% { opacity: 1; }
+  100% { transform: translate(0, 0) scale(1.2); opacity: 0; }
+}
+
+/* Boss标题卡 */
+.bossTitleCard {
+  position: absolute;
+  top: 12%;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 20;
+  text-align: center;
+  pointer-events: none;
+  animation: titleSlideIn 0.4s ease-out forwards;
+}
+
+.bossTitleName {
+  font-size: 22px;
+  font-weight: 900;
+  color: #FFD700;
+  text-shadow: 0 0 16px rgba(255, 215, 0, 0.6), 0 2px 4px rgba(0,0,0,0.5);
+  white-space: nowrap;
+}
+
+.bossTitleDiff {
+  font-size: 12px;
+  font-weight: 700;
+  margin-top: 2px;
+}
+
+@keyframes titleSlideIn {
+  0% { opacity: 0; transform: translateX(-50%) translateY(10px) scale(0.8); }
+  60% { opacity: 1; transform: translateX(-50%) translateY(-3px) scale(1.05); }
+  100% { opacity: 1; transform: translateX(-50%) translateY(0) scale(1); }
+}
+
+/* VS闪光 */
+.vsFlashEffect {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 19;
+  font-size: 28px;
+  font-weight: 900;
+  color: #FFD700;
+  text-shadow: 0 0 20px rgba(255, 215, 0, 0.8);
+  animation: vsFlash 0.3s ease-out forwards;
+  pointer-events: none;
+}
+
+@keyframes vsFlash {
+  0% { opacity: 0; transform: translate(-50%, -50%) scale(0.3); }
+  50% { opacity: 1; transform: translate(-50%, -50%) scale(1.5); }
+  100% { opacity: 0; transform: translate(-50%, -50%) scale(2); }
 }
 
 /* 击杀爆炸特效 */
@@ -484,6 +729,91 @@
   30% { transform: translate(0, -55%) scale(1.3); opacity: 1; }
   60% { transform: translate(0, -50%) scale(1); opacity: 1; }
   100% { transform: translate(0, -40%) scale(1); opacity: 0; }
+}
+
+/* 击杀华丽文字 */
+.defeatTextGrand {
+  position: absolute;
+  top: 40%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 25;
+  pointer-events: none;
+  animation: defeatTextGrand 1.5s ease-out forwards;
+  text-align: center;
+}
+
+@keyframes defeatTextGrand {
+  0% { transform: translate(-50%, -50%) scale(0.2); opacity: 0; }
+  15% { transform: translate(-50%, -50%) scale(1.8); opacity: 1; }
+  30% { transform: translate(-50%, -50%) scale(1.1); }
+  50% { transform: translate(-50%, -50%) scale(1.3); filter: brightness(1.5); }
+  70% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+  100% { transform: translate(-50%, -55%) scale(1); opacity: 0; }
+}
+
+.defeatGrandLabel {
+  font-size: 32px;
+  font-weight: 900;
+  color: #FFD700;
+  text-shadow: 0 0 30px rgba(255, 215, 0, 1), 0 0 60px rgba(255, 140, 66, 0.6), 0 2px 4px rgba(0,0,0,0.5);
+  white-space: nowrap;
+}
+
+.defeatGrandSub {
+  font-size: 16px;
+  font-weight: 700;
+  color: #FBBF24;
+  margin-top: 4px;
+  text-shadow: 0 0 10px rgba(251, 191, 36, 0.6);
+}
+
+/* Boss碎片 */
+.bossFragment {
+  position: absolute;
+  pointer-events: none;
+  z-index: 16;
+  width: 8px;
+  height: 8px;
+  border-radius: 2px;
+  animation: bossFragment 0.8s ease-out forwards;
+}
+
+@keyframes bossFragment {
+  0% { transform: translate(0, 0) scale(1.5) rotate(0); opacity: 1; }
+  40% { opacity: 0.9; }
+  100% { transform: translate(var(--frag-x), var(--frag-y)) scale(0) rotate(var(--frag-rot, 180deg)); opacity: 0; }
+}
+
+/* 能量光柱 */
+.energyPillar {
+  position: absolute;
+  right: 20%;
+  top: -20%;
+  width: 40px;
+  height: 140%;
+  pointer-events: none;
+  z-index: 15;
+  animation: energyPillar 1s ease-out forwards;
+  border-radius: 20px;
+}
+
+@keyframes energyPillar {
+  0% { opacity: 0; transform: scaleX(0.3); }
+  20% { opacity: 1; transform: scaleX(1.2); }
+  50% { opacity: 0.8; transform: scaleX(0.8); }
+  100% { opacity: 0; transform: scaleX(0.2); }
+}
+
+/* 三波粒子 */
+.defeatParticleWave2 .defeatParticle {
+  animation-delay: 0.1s;
+  animation-duration: 0.9s;
+}
+
+.defeatParticleWave3 .defeatParticle {
+  animation-delay: 0.2s;
+  animation-duration: 1.1s;
 }
 
 .defeatKOLabel {
@@ -568,6 +898,153 @@
 
 .projectile.bossAttack {
   animation: bossProjectileFly 0.5s ease forwards;
+}
+
+/* ===== 斩击轨迹弹幕 ===== */
+.slashTrail {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+  z-index: 10;
+  width: 36px;
+  height: 8px;
+  border-radius: 4px;
+  background: linear-gradient(90deg, transparent, #FFD700, #FF8C42);
+  box-shadow: 0 0 12px rgba(255, 215, 0, 0.8), 0 0 24px rgba(255, 140, 66, 0.4);
+  animation: slashTrailFly 0.45s ease-out forwards;
+}
+
+.slashTrail::before,
+.slashTrail::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  height: 6px;
+  border-radius: 3px;
+  background: linear-gradient(90deg, transparent, rgba(255, 215, 0, 0.6));
+}
+
+.slashTrail::before {
+  width: 24px;
+  right: 100%;
+  margin-right: -4px;
+  opacity: 0.4;
+}
+
+.slashTrail::after {
+  width: 16px;
+  right: 100%;
+  margin-right: 4px;
+  opacity: 0.2;
+}
+
+@keyframes slashTrailFly {
+  0% { left: 18%; opacity: 0; transform: translateY(-50%) scale(0.6) rotate(-5deg); }
+  15% { opacity: 1; transform: translateY(-50%) scale(1) rotate(0deg); }
+  50% { left: 45%; transform: translateY(calc(-50% + 6px)) scale(1.2) rotate(3deg); opacity: 1; }
+  80% { left: 70%; transform: translateY(calc(-50% - 4px)) scale(0.9) rotate(-2deg); opacity: 0.8; }
+  100% { left: 78%; opacity: 0; transform: translateY(-50%) scale(0.4) rotate(0deg); }
+}
+
+/* ===== Boss弹幕轨迹 ===== */
+.bossSlashTrail {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+  z-index: 10;
+  width: 32px;
+  height: 7px;
+  border-radius: 4px;
+  animation: bossSlashTrailFly 0.45s ease-out forwards;
+}
+
+.bossSlashTrail::before,
+.bossSlashTrail::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  height: 5px;
+  border-radius: 3px;
+}
+
+.bossSlashTrail::before {
+  width: 20px;
+  left: 100%;
+  margin-left: -4px;
+  opacity: 0.4;
+}
+
+.bossSlashTrail::after {
+  width: 14px;
+  left: 100%;
+  margin-left: 4px;
+  opacity: 0.2;
+}
+
+@keyframes bossSlashTrailFly {
+  0% { left: 80%; opacity: 0; transform: translateY(-50%) scale(0.6) rotate(5deg); }
+  15% { opacity: 1; transform: translateY(-50%) scale(1) rotate(0deg); }
+  50% { left: 55%; transform: translateY(calc(-50% + 5px)) scale(1.2) rotate(-3deg); opacity: 1; }
+  80% { left: 30%; transform: translateY(calc(-50% - 3px)) scale(0.9) rotate(2deg); opacity: 0.8; }
+  100% { left: 18%; opacity: 0; transform: translateY(-50%) scale(0.4) rotate(0deg); }
+}
+
+/* ===== 技能能量弹 ===== */
+.energyProjectile {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+  z-index: 11;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  animation: energyBlastFly 0.5s ease-out forwards;
+}
+
+.energyProjectile::before {
+  content: '';
+  position: absolute;
+  inset: -8px;
+  border-radius: 50%;
+  border: 2px solid;
+  opacity: 0.5;
+  animation: energyRing 0.5s ease-out forwards;
+}
+
+.energyProjectile.shadow {
+  background: radial-gradient(circle, #A78BFA, #7C3AED, #4C1D95);
+  box-shadow: 0 0 20px rgba(139, 92, 246, 0.8), 0 0 40px rgba(139, 92, 246, 0.4);
+}
+
+.energyProjectile.shadow::before {
+  border-color: #A78BFA;
+}
+
+.energyProjectile.dragon {
+  background: radial-gradient(circle, #FCD34D, #EF4444, #991B1B);
+  box-shadow: 0 0 20px rgba(239, 68, 68, 0.8), 0 0 40px rgba(249, 115, 22, 0.4);
+}
+
+.energyProjectile.dragon::before {
+  border-color: #FCA5A5;
+}
+
+@keyframes energyBlastFly {
+  0% { left: 18%; opacity: 0; transform: translateY(-50%) scale(0.3); }
+  15% { opacity: 1; transform: translateY(-50%) scale(1.1); }
+  50% { left: 45%; transform: translateY(-50%) scale(1.4); }
+  80% { left: 70%; transform: translateY(-50%) scale(1); opacity: 0.9; }
+  100% { left: 78%; opacity: 0; transform: translateY(-50%) scale(1.8); }
+}
+
+@keyframes energyRing {
+  0% { inset: -4px; opacity: 0.8; }
+  100% { inset: -16px; opacity: 0; }
 }
 
 @keyframes playerProjectileFly {
@@ -983,6 +1460,55 @@
   transform: scale(0.98);
 }
 
+/* ===== 全屏闪白 ===== */
+.screenFlash {
+  position: absolute;
+  inset: 0;
+  background: rgba(255, 255, 255, 0.9);
+  z-index: 25;
+  pointer-events: none;
+  animation: screenFlashAnim 0.25s ease-out forwards;
+  border-radius: 20px;
+}
+
+@keyframes screenFlashAnim {
+  0% { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+/* ===== 动态暗角 ===== */
+.dynamicVignette {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 3;
+  border-radius: 20px;
+  transition: box-shadow 0.3s ease;
+}
+
+.dynamicVignette.vignetteRed {
+  box-shadow: inset 0 0 40px rgba(239, 68, 68, 0.4);
+}
+
+.dynamicVignette.vignetteOrange {
+  box-shadow: inset 0 0 30px rgba(249, 115, 22, 0.3);
+}
+
+.dynamicVignette.vignettePurple {
+  box-shadow: inset 0 0 30px rgba(139, 92, 246, 0.3);
+}
+
+.dynamicVignette.vignetteRainbow {
+  animation: rainbowVignette 1.5s ease-in-out infinite;
+}
+
+@keyframes rainbowVignette {
+  0%, 100% { box-shadow: inset 0 0 40px rgba(239, 68, 68, 0.4); }
+  25% { box-shadow: inset 0 0 40px rgba(249, 115, 22, 0.4); }
+  50% { box-shadow: inset 0 0 40px rgba(139, 92, 246, 0.4); }
+  75% { box-shadow: inset 0 0 40px rgba(74, 222, 128, 0.4); }
+}
+
 /* ===== VS 闪电线 ===== */
 .vsDivider {
   position: absolute;
@@ -1041,6 +1567,8 @@
 .comboBar {
   display: flex;
   justify-content: center;
+  align-items: center;
+  gap: 12px;
   margin-bottom: 4px;
 }
 
@@ -1053,6 +1581,25 @@
   border-radius: 20px;
   padding: 4px 14px;
   transition: all 0.3s;
+}
+
+/* ===== 退出按钮 ===== */
+.quitBtn {
+  font-size: 12px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.5);
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 8px;
+  padding: 3px 10px;
+  cursor: pointer;
+  transition: all 0.15s;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.quitBtn:hover {
+  color: rgba(255, 255, 255, 0.7);
+  background: rgba(255, 255, 255, 0.1);
 }
 
 .comboIndicator.combo3 {
@@ -1223,6 +1770,169 @@
   background: rgba(139, 92, 246, 0.15) !important;
 }
 
+/* ===== 技能暗角 ===== */
+.skillVignette {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 14;
+  border-radius: 20px;
+  animation: vignetteDarken 0.15s ease-out forwards;
+}
+
+.skillVignette.shadow {
+  box-shadow: inset 0 0 60px rgba(30, 10, 60, 0.8), inset 0 0 100px rgba(139, 92, 246, 0.2);
+}
+
+.skillVignette.dragon {
+  box-shadow: inset 0 0 60px rgba(60, 10, 10, 0.8), inset 0 0 100px rgba(239, 68, 68, 0.2);
+}
+
+@keyframes vignetteDarken {
+  0% { opacity: 0; }
+  100% { opacity: 1; }
+}
+
+/* ===== 技能蓄力球 ===== */
+.skillCharge {
+  position: absolute;
+  left: 18%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 16;
+  animation: energyCharge 0.3s ease-out forwards;
+}
+
+.skillCharge.shadow {
+  background: radial-gradient(circle, #C4B5FD, #7C3AED);
+  box-shadow: 0 0 20px rgba(139, 92, 246, 0.8), 0 0 40px rgba(139, 92, 246, 0.4);
+}
+
+.skillCharge.dragon {
+  background: radial-gradient(circle, #FCD34D, #EF4444);
+  box-shadow: 0 0 20px rgba(239, 68, 68, 0.8), 0 0 40px rgba(249, 115, 22, 0.4);
+}
+
+@keyframes energyCharge {
+  0% { transform: translate(-50%, -50%) scale(0.2); opacity: 0; }
+  50% { transform: translate(-50%, -50%) scale(1.5); opacity: 1; }
+  100% { transform: translate(-50%, -50%) scale(1); opacity: 0.8; }
+}
+
+/* ===== 冲刺残影 ===== */
+.dashTrail {
+  position: absolute;
+  top: 50%;
+  left: 18%;
+  transform: translateY(-50%);
+  pointer-events: none;
+  z-index: 12;
+  animation: dashAfterimage 0.4s ease-out forwards;
+}
+
+.dashTrailGhost {
+  position: absolute;
+  top: 50%;
+  opacity: 0.3;
+  pointer-events: none;
+  z-index: 11;
+  filter: blur(2px);
+  animation: ghostFade 0.4s ease-out forwards;
+}
+
+@keyframes dashAfterimage {
+  0% { left: 18%; opacity: 1; }
+  100% { left: 55%; opacity: 0; }
+}
+
+@keyframes ghostFade {
+  0% { opacity: 0.4; }
+  100% { opacity: 0; }
+}
+
+/* ===== 交叉斩痕 ===== */
+.slashLine {
+  position: absolute;
+  top: 50%;
+  right: 18%;
+  transform: translate(0, -50%);
+  width: 60px;
+  height: 3px;
+  pointer-events: none;
+  z-index: 17;
+  border-radius: 2px;
+}
+
+.slashLine.slash1 {
+  animation: crossSlash1 0.3s ease-out forwards;
+}
+
+.slashLine.slash2 {
+  animation: crossSlash2 0.3s ease-out 0.05s forwards;
+}
+
+@keyframes crossSlash1 {
+  0% { width: 0; opacity: 0; transform: translate(0, -50%) rotate(-30deg); }
+  30% { width: 60px; opacity: 1; }
+  100% { width: 60px; opacity: 0; transform: translate(0, -50%) rotate(-30deg); }
+}
+
+@keyframes crossSlash2 {
+  0% { width: 0; opacity: 0; transform: translate(0, -50%) rotate(30deg); }
+  30% { width: 60px; opacity: 1; }
+  100% { width: 60px; opacity: 0; transform: translate(0, -50%) rotate(30deg); }
+}
+
+/* ===== 升龙斩 — 向上冲刺 ===== */
+.skillLaunch {
+  position: absolute;
+  left: 18%;
+  bottom: 20%;
+  pointer-events: none;
+  z-index: 13;
+  animation: upwardLaunch 0.35s ease-out forwards;
+}
+
+@keyframes upwardLaunch {
+  0% { bottom: 20%; opacity: 1; }
+  50% { bottom: 50%; opacity: 1; }
+  100% { bottom: 70%; opacity: 0; }
+}
+
+/* 火焰粒子雨 */
+.fireRainParticle {
+  position: absolute;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 13;
+  animation: fireEmber 0.6s ease-out forwards;
+}
+
+@keyframes fireEmber {
+  0% { transform: translateY(0) scale(1.5); opacity: 1; }
+  60% { opacity: 0.8; }
+  100% { transform: translateY(var(--fire-fall, 80px)) scale(0); opacity: 0; }
+}
+
+/* Boss被击飞 */
+.bossLaunched {
+  animation: bossCrashDown 0.5s ease-out forwards;
+}
+
+@keyframes bossCrashDown {
+  0% { transform: translateY(-30px) scale(1.1); }
+  40% { transform: translateY(-40px) scale(1.15) rotate(-5deg); }
+  70% { transform: translateY(5px) scale(0.95); }
+  85% { transform: translateY(-3px) scale(1.02); }
+  100% { transform: translateY(0) scale(1); }
+}
+
 /* ===== 连击文字级别 ===== */
 .greatCombo {
   color: #F97316 !important;
@@ -1233,6 +1943,77 @@
   color: #EF4444 !important;
   text-shadow: 0 0 20px rgba(239, 68, 68, 0.6);
   font-size: 22px !important;
+}
+
+/* ===== 连击边缘发光 ===== */
+.comboEdgeGlow {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 4;
+  border-radius: 20px;
+  animation: edgeGlow 0.6s ease-in-out infinite;
+}
+
+@keyframes edgeGlow {
+  0%, 100% { box-shadow: inset 0 0 15px rgba(255, 215, 0, 0.2); }
+  50% { box-shadow: inset 0 0 25px rgba(255, 215, 0, 0.4); }
+}
+
+/* 3连击 — 橙色脉冲 */
+.comboEdgeGlow.combo3 {
+  animation: edgePulseOrange 0.8s ease-in-out infinite;
+}
+
+@keyframes edgePulseOrange {
+  0%, 100% { box-shadow: inset 0 0 20px rgba(249, 115, 22, 0.25); }
+  50% { box-shadow: inset 0 0 35px rgba(249, 115, 22, 0.5); }
+}
+
+/* 5连击 — 红色暗角 */
+.comboEdgeGlow.combo5 {
+  animation: vignettePulseRed 0.6s ease-in-out infinite;
+}
+
+@keyframes vignettePulseRed {
+  0%, 100% { box-shadow: inset 0 0 30px rgba(239, 68, 68, 0.3), inset 0 0 60px rgba(239, 68, 68, 0.1); }
+  50% { box-shadow: inset 0 0 45px rgba(239, 68, 68, 0.5), inset 0 0 80px rgba(239, 68, 68, 0.2); }
+}
+
+/* 7连击+ — 彩虹脉冲 */
+.comboEdgeGlow.combo7 {
+  animation: rainbowEdge 0.8s ease-in-out infinite;
+}
+
+@keyframes rainbowEdge {
+  0%, 100% { box-shadow: inset 0 0 35px rgba(239, 68, 68, 0.4), inset 0 0 60px rgba(239, 68, 68, 0.15); }
+  25% { box-shadow: inset 0 0 35px rgba(249, 115, 22, 0.4), inset 0 0 60px rgba(249, 115, 22, 0.15); }
+  50% { box-shadow: inset 0 0 35px rgba(139, 92, 246, 0.4), inset 0 0 60px rgba(139, 92, 246, 0.15); }
+  75% { box-shadow: inset 0 0 35px rgba(74, 222, 128, 0.4), inset 0 0 60px rgba(74, 222, 128, 0.15); }
+}
+
+/* 7连击+ — 疯狂连击 */
+.comboCrazy {
+  font-size: 26px !important;
+  color: #F59E0B !important;
+  text-shadow: 0 0 24px rgba(245, 158, 11, 0.7), 0 0 48px rgba(239, 68, 68, 0.4);
+  animation: comboCrazyPulse 0.4s ease-in-out infinite;
+}
+
+@keyframes comboCrazyPulse {
+  0%, 100% { transform: scale(1); filter: hue-rotate(0deg); }
+  50% { transform: scale(1.15); filter: hue-rotate(20deg); }
+}
+
+/* 连击文字抖动 — 5连击+ */
+.comboTextShake {
+  animation: comboTextShake 0.3s ease-in-out infinite;
+}
+
+@keyframes comboTextShake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-2px) rotate(-1deg); }
+  75% { transform: translateX(2px) rotate(1deg); }
 }
 
 /* ===== 浮动伤害数字 ===== */
@@ -1247,10 +2028,47 @@
   transform: translateX(-50%);
 }
 
+.floatingDmgCrit {
+  font-size: 36px;
+  animation: dmgCritPop 0.9s ease-out forwards;
+}
+
+.floatingDmgDigit {
+  display: inline-block;
+  animation: dmgDigitPop 0.5s ease-out both;
+}
+
 @keyframes floatUp {
   0% { opacity: 1; transform: translateX(-50%) translateY(0) scale(1.3); }
   60% { opacity: 1; transform: translateX(-50%) translateY(-20px) scale(1); }
   100% { opacity: 0; transform: translateX(-50%) translateY(-40px) scale(0.8); }
+}
+
+@keyframes dmgCritPop {
+  0% { opacity: 0; transform: translateX(-50%) translateY(10px) scale(0.3); }
+  20% { opacity: 1; transform: translateX(-50%) translateY(-5px) scale(2); }
+  35% { transform: translateX(-50%) translateY(2px) scale(1.6); }
+  50% { transform: translateX(-50%) translateY(-2px) scale(1.4); }
+  70% { opacity: 1; transform: translateX(-50%) translateY(-15px) scale(1.2); }
+  100% { opacity: 0; transform: translateX(-50%) translateY(-45px) scale(0.8); }
+}
+
+@keyframes dmgDigitPop {
+  0% { opacity: 0; transform: translateY(8px) scale(0.5); }
+  60% { opacity: 1; transform: translateY(-2px) scale(1.1); }
+  100% { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* Boss对玩家伤害 — 向右滑动 */
+.floatingDmgSlideRight {
+  animation: dmgSlideRight 0.8s ease-out forwards;
+}
+
+@keyframes dmgSlideRight {
+  0% { opacity: 0; transform: translateX(-50%) translateX(-20px); }
+  20% { opacity: 1; transform: translateX(-50%) translateX(0); }
+  70% { opacity: 1; transform: translateX(-50%) translateX(5px); }
+  100% { opacity: 0; transform: translateX(-50%) translateX(15px); }
 }
 
 /* ===== Boss受击闪光 ===== */
@@ -1265,6 +2083,87 @@
 @keyframes hitFlashAnim {
   0% { opacity: 0.8; }
   100% { opacity: 0; }
+}
+
+/* ===== 命中爆炸特效 ===== */
+.hitExplosion {
+  position: absolute;
+  pointer-events: none;
+  z-index: 14;
+}
+
+.hitExplosion.bossSide {
+  right: 18%;
+  top: 50%;
+  transform: translate(0, -50%);
+}
+
+.hitExplosion.playerSide {
+  left: 18%;
+  top: 50%;
+  transform: translate(0, -50%);
+}
+
+/* 冲击波圆环 */
+.impactRing {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  border: 3px solid;
+  animation: impactShockwave 0.6s ease-out forwards;
+}
+
+@keyframes impactShockwave {
+  0% { width: 10px; height: 10px; opacity: 1; border-width: 4px; }
+  50% { opacity: 0.6; }
+  100% { width: 140px; height: 140px; opacity: 0; border-width: 1px; }
+}
+
+/* 命中闪光 */
+.impactFlash {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #fff;
+  animation: impactFlashAnim 0.3s ease-out forwards;
+}
+
+@keyframes impactFlashAnim {
+  0% { transform: translate(-50%, -50%) scale(0.5); opacity: 1; }
+  40% { transform: translate(-50%, -50%) scale(2.5); opacity: 0.8; }
+  100% { transform: translate(-50%, -50%) scale(4); opacity: 0; }
+}
+
+/* 火花溅射 */
+.impactSpark {
+  position: absolute;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  animation: sparkFly 0.5s ease-out forwards;
+}
+
+.impactSpark::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  right: 100%;
+  width: 8px;
+  height: 2px;
+  border-radius: 1px;
+  background: inherit;
+  opacity: 0.5;
+}
+
+@keyframes sparkFly {
+  0% { transform: translate(0, 0) scale(1.5); opacity: 1; }
+  100% { transform: translate(var(--spark-x), var(--spark-y)) scale(0); opacity: 0; }
 }
 
 /* ===== 皮肤选择面板 ===== */

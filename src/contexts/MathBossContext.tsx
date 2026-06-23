@@ -122,6 +122,7 @@ export function MathBossProvider({ children }: { children: React.ReactNode }) {
       setHiddenUnlocked(status.unlocked);
       setHiddenTodayPlayCount(status.todayPlayCount);
       setHiddenTodayBestScore(status.todayBestScore);
+      if (status.todayTheme) setHiddenTheme(status.todayTheme);
     } catch {
       // ignore
     }
