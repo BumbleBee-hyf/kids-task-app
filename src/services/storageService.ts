@@ -284,6 +284,59 @@ export const checkinStorage = {
   },
 };
 
+// ============ 数学打Boss相关 ============
+
+export const mathBossStorage = {
+  getStatus: async (studentId: string): Promise<{
+    playCount: number;
+    bestScore: number;
+    bestReward: number;
+    hiddenUnlocked: boolean;
+  }> => {
+    return request('GET', `/math-boss/status/${studentId}`);
+  },
+
+  getHiddenStatus: async (studentId: string): Promise<{
+    unlocked: boolean;
+    todayPlayCount: number;
+    todayBestScore: number;
+  }> => {
+    return request('GET', `/math-boss/hidden/status/${studentId}`);
+  },
+
+  start: async (studentId: string, mode: 'normal' | 'hidden' = 'normal'): Promise<{
+    success: boolean;
+    question: { a: number; b: number; operator?: '+' | '-'; answer?: number; result?: number; correctOperator?: '+' | '-'; difficulty: string; mode?: string };
+    pointBalance: number;
+  }> => {
+    return request('POST', '/math-boss/start', { studentId, mode });
+  },
+
+  getQuestion: async (difficulty: string, mode: 'normal' | 'hidden' = 'normal'): Promise<{
+    success: boolean;
+    question: { a: number; b: number; operator?: '+' | '-'; answer?: number; result?: number; correctOperator?: '+' | '-'; difficulty: string; mode?: string };
+  }> => {
+    return request('POST', '/math-boss/question', { difficulty, mode });
+  },
+
+  finish: async (studentId: string, bossesDefeated: number, totalQuestions: number, correctCount: number, mode: 'normal' | 'hidden' = 'normal', playerHearts?: number, theme?: string): Promise<{
+    success: boolean;
+    bossesDefeated: number;
+    totalQuestions: number;
+    correctCount: number;
+    reward: number;
+    pointBalance: number;
+    unlockedHidden?: boolean;
+    unlockedSkins?: { bossIcon: string; theme: string }[];
+  }> => {
+    return request('POST', '/math-boss/finish', { studentId, bossesDefeated, totalQuestions, correctCount, mode, playerHearts, theme });
+  },
+
+  getSkins: async (studentId: string): Promise<{ skins: { id: string; bossIcon: string; theme: string; unlockedAt: string }[] }> => {
+    return request('GET', `/math-boss/skins/${studentId}`);
+  },
+};
+
 // ============ 会话管理 ============
 
 export const sessionStorage = {

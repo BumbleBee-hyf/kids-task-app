@@ -16,6 +16,7 @@ export default function StudentLayout() {
   const navItems = [
     { to: '/student/dashboard', icon: '🏠', label: '首页' },
     { to: '/student/tasks', icon: '📋', label: '我的任务' },
+    { to: '/student/math-boss', icon: '⚔️', label: '数学打怪' },
     { to: '/student/lottery', icon: '🎰', label: '抽奖中心' },
     { to: '/student/voucher', icon: '💰', label: '我的钱包' },
   ];

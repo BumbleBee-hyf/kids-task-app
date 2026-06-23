@@ -317,6 +317,14 @@ if (!db.lotteryConfig) {
   db.lotteryConfig = {};
   saveDb(db);
 }
+if (!db.mathBossRecords) {
+  db.mathBossRecords = [];
+  saveDb(db);
+}
+if (!db.skinUnlocks) {
+  db.skinUnlocks = [];
+  saveDb(db);
+}
 
 // 启动时执行一次每日任务初始化
 initDailyTasks(db);
@@ -1006,6 +1014,340 @@ const server = http.createServer(async (req, res) => {
       }
       saveDb(db);
       jsonResponse(res, 200, { count: existing ? existing.count : 1 });
+      return;
+    }
+
+    // ============ Math Boss ============
+
+    // Boss难度配置
+    const BOSS_DIFFICULTIES = ['easy', 'easy', 'easy', 'medium', 'medium', 'medium', 'hard', 'hard', 'hard', 'hard'];
+
+    // 根据难度随机生成1道题
+    function generateOneQuestion(difficulty) {
+      function randInt(min, max) {
+        return Math.floor(Math.random() * (max - min + 1)) + min;
+      }
+
+      if (difficulty === 'easy') {
+        const isAdd = Math.random() < 0.5;
+        if (isAdd) {
+          let a, b;
+          do {
+            a = randInt(1, 89);
+            b = randInt(1, 9);
+          } while ((a % 10) + (b % 10) >= 10 || a + b > 100);
+          return { a, b, operator: '+', answer: a + b, difficulty: 'easy' };
+        } else {
+          let a, b;
+          do {
+            a = randInt(11, 99);
+            b = randInt(1, 9);
+          } while ((a % 10) < (b % 10));
+          return { a, b, operator: '-', answer: a - b, difficulty: 'easy' };
+        }
+      } else if (difficulty === 'medium') {
+        const type = randInt(0, 2);
+        if (type === 0) {
+          let a, b;
+          do {
+            a = randInt(1, 89);
+            b = randInt(1, 9);
+          } while ((a % 10) + (b % 10) >= 10 || a + b > 100);
+          return { a, b, operator: '+', answer: a + b, difficulty: 'medium' };
+        } else if (type === 1) {
+          let a, b;
+          do {
+            a = randInt(2, 91);
+            b = randInt(2, Math.min(98, 100 - a));
+          } while ((a % 10) + (b % 10) < 10);
+          return { a, b, operator: '+', answer: a + b, difficulty: 'medium' };
+        } else {
+          let a, b;
+          do {
+            a = randInt(11, 99);
+            b = randInt(1, 9);
+          } while ((a % 10) < (b % 10));
+          return { a, b, operator: '-', answer: a - b, difficulty: 'medium' };
+        }
+      } else {
+        const isAdd = Math.random() < 0.5;
+        if (isAdd) {
+          let a, b;
+          do {
+            a = randInt(2, 91);
+            b = randInt(2, Math.min(98, 100 - a));
+          } while ((a % 10) + (b % 10) < 10);
+          return { a, b, operator: '+', answer: a + b, difficulty: 'hard' };
+        } else {
+          let a, b;
+          do {
+            a = randInt(21, 99);
+            b = randInt(11, a - 1);
+          } while ((a % 10) >= (b % 10));
+          return { a, b, operator: '-', answer: a - b, difficulty: 'hard' };
+        }
+      }
+    }
+
+    // 阶梯奖励（按击败Boss数）
+    function getMathBossReward(bossesDefeated) {
+      const rewards = { 0: 0, 1: 0, 2: 0, 3: 0, 4: 4, 5: 7, 6: 10, 7: 13, 8: 16, 9: 19, 10: 25 };
+      return rewards[bossesDefeated] || 0;
+    }
+
+    // 隐藏模式阶梯奖励（1.5倍）
+    function getMinecraftBossReward(bossesDefeated) {
+      const rewards = { 0: 0, 1: 0, 2: 0, 3: 0, 4: 6, 5: 11, 6: 15, 7: 20, 8: 24, 9: 29, 10: 38 };
+      return rewards[bossesDefeated] || 0;
+    }
+
+    // 隐藏模式题目：随机隐藏 a 或 b，让玩家填数字  如 12 + ? = 29
+    function generateHiddenQuestion(difficulty) {
+      const q = generateOneQuestion(difficulty);
+      const blank = Math.random() < 0.5 ? 'a' : 'b';
+      return {
+        a: q.a,
+        b: q.b,
+        operator: q.operator,
+        mode: 'hidden',
+        blank,
+        answer: blank === 'a' ? q.a : q.b,
+        result: q.answer,
+        difficulty: q.difficulty,
+      };
+    }
+
+    // 获取今日挑战状态
+    const mathBossStatusMatch = pathname.match(/^\/api\/math-boss\/status\/([^/]+)$/);
+    if (mathBossStatusMatch && method === 'GET') {
+      const studentId = mathBossStatusMatch[1];
+      const today = getLocalDateStr();
+      const todayRecords = (db.mathBossRecords || []).filter(r => r.studentId === studentId && r.date === today);
+      const bestBosses = todayRecords.reduce((best, r) => Math.max(best, r.bossesDefeated), 0);
+      const playCount = todayRecords.length;
+
+      // 检查今日是否有通关10个且血量>3的记录（每日解锁）
+      const todayCleared = (db.mathBossRecords || []).some(
+        r => r.studentId === studentId && r.date === today && r.mode === 'normal' && r.bossesDefeated === 10 && (r.playerHearts || 0) > 3
+      );
+
+      jsonResponse(res, 200, {
+        playCount,
+        bestScore: bestBosses,
+        bestReward: todayRecords.reduce((best, r) => Math.max(best, r.reward), 0),
+        hiddenUnlocked: todayCleared,
+      });
+      return;
+    }
+
+    // 获取隐藏模式状态（每日解锁：今天通关10个且血量>3才能解锁）
+    const hiddenStatusMatch = pathname.match(/^\/api\/math-boss\/hidden\/status\/([^/]+)$/);
+    if (hiddenStatusMatch && method === 'GET') {
+      const studentId = hiddenStatusMatch[1];
+      const today = getLocalDateStr();
+
+      // 检查今日是否有通关10个且血量>3的记录
+      const todayCleared = (db.mathBossRecords || []).some(
+        r => r.studentId === studentId && r.date === today && r.mode === 'normal' && r.bossesDefeated === 10 && (r.playerHearts || 0) > 3
+      );
+      const todayRecords = (db.mathBossRecords || []).filter(
+        r => r.studentId === studentId && r.date === today && r.mode === 'hidden'
+      );
+      const bestBosses = todayRecords.reduce((best, r) => Math.max(best, r.bossesDefeated), 0);
+
+      jsonResponse(res, 200, {
+        unlocked: todayCleared,
+        todayPlayCount: todayRecords.length,
+        todayBestScore: bestBosses,
+      });
+      return;
+    }
+
+    // 开始挑战（扣积分）
+    if (pathname === '/api/math-boss/start' && method === 'POST') {
+      const body = await parseBody(req);
+      const { studentId, mode } = body;
+      const isHidden = mode === 'hidden';
+
+      // 检查今日挑战次数（每天最多2次，普通和隐藏分别计数）
+      const today = getLocalDateStr();
+      const todayCount = (db.mathBossRecords || []).filter(
+        r => r.studentId === studentId && r.date === today && (r.mode || 'normal') === (isHidden ? 'hidden' : 'normal')
+      ).length;
+      if (todayCount >= 2) {
+        jsonResponse(res, 400, { error: '今天已挑战2次，明天再来吧！' });
+        return;
+      }
+
+      // 隐藏模式需先检查今日解锁
+      if (isHidden) {
+        const today = getLocalDateStr();
+        const todayCleared = (db.mathBossRecords || []).some(
+          r => r.studentId === studentId && r.date === today && r.mode === 'normal' && r.bossesDefeated === 10 && (r.playerHearts || 0) > 3
+        );
+        if (!todayCleared) {
+          jsonResponse(res, 400, { error: '隐藏关卡尚未解锁！需要普通模式通关10关且血量大于3' });
+          return;
+        }
+      }
+
+      // 检查积分余额
+      const pointBalance = db.points
+        .filter(p => p.studentId === studentId)
+        .reduce((sum, p) => sum + p.amount, 0);
+
+      if (pointBalance < 10) {
+        jsonResponse(res, 400, { error: `积分不足，需要 10 积分，当前余额 ${pointBalance} 积分` });
+        return;
+      }
+
+      // 扣减积分
+      db.points.push({
+        id: generateId(),
+        studentId,
+        amount: -10,
+        source: isHidden ? 'math_boss_hidden_cost' : 'math_boss_cost',
+        description: isHidden ? '隐藏关卡挑战消耗' : '数学打Boss挑战消耗',
+        createdAt: now(),
+      });
+      saveDb(db);
+
+      // 生成第一题
+      const q = isHidden
+        ? generateHiddenQuestion('easy')
+        : generateOneQuestion(BOSS_DIFFICULTIES[0]);
+
+      jsonResponse(res, 200, {
+        success: true,
+        question: isHidden
+          ? { a: q.a, b: q.b, operator: q.operator, mode: 'hidden', blank: q.blank, answer: q.answer, result: q.result, difficulty: q.difficulty }
+          : { a: q.a, b: q.b, operator: q.operator, answer: q.answer, difficulty: q.difficulty },
+        pointBalance: pointBalance - 10,
+      });
+      return;
+    }
+
+    // 生成题目（无状态，前端告诉服务器当前Boss难度即可）
+    if (pathname === '/api/math-boss/question' && method === 'POST') {
+      const body = await parseBody(req);
+      const { difficulty, mode } = body;
+      if (!difficulty || !['easy', 'medium', 'hard'].includes(difficulty)) {
+        jsonResponse(res, 400, { error: '需要指定难度 easy/medium/hard' });
+        return;
+      }
+      const isHidden = mode === 'hidden';
+      if (isHidden) {
+        const q = generateHiddenQuestion(difficulty);
+        jsonResponse(res, 200, {
+          success: true,
+          question: { a: q.a, b: q.b, operator: q.operator, mode: 'hidden', blank: q.blank, answer: q.answer, result: q.result, difficulty: q.difficulty },
+        });
+      } else {
+        const q = generateOneQuestion(difficulty);
+        jsonResponse(res, 200, {
+          success: true,
+          question: { a: q.a, b: q.b, operator: q.operator, answer: q.answer, difficulty: q.difficulty },
+        });
+      }
+      return;
+    }
+
+    // 结算奖励
+    if (pathname === '/api/math-boss/finish' && method === 'POST') {
+      const body = await parseBody(req);
+      const { studentId, bossesDefeated, totalQuestions, correctCount, mode, playerHearts, theme } = body;
+      const isHidden = mode === 'hidden';
+
+      const reward = isHidden
+        ? getMinecraftBossReward(bossesDefeated)
+        : getMathBossReward(bossesDefeated);
+
+      // 保存记录
+      const record = {
+        id: generateId(),
+        studentId,
+        date: getLocalDateStr(),
+        bossesDefeated,
+        totalQuestions,
+        correctCount,
+        reward,
+        playerHearts: typeof playerHearts === 'number' ? playerHearts : 0,
+        mode: isHidden ? 'hidden' : 'normal',
+        createdAt: now(),
+      };
+      db.mathBossRecords.push(record);
+
+      // 奖励积分
+      if (reward > 0) {
+        db.points.push({
+          id: generateId(),
+          studentId,
+          amount: reward,
+          source: isHidden ? 'math_boss_hidden_reward' : 'math_boss_reward',
+          description: isHidden
+            ? `隐藏关卡奖励（击败${bossesDefeated}个Boss）`
+            : `数学打Boss奖励（击败${bossesDefeated}个Boss）`,
+          createdAt: now(),
+        });
+      }
+
+      // 普通模式：通关10个且血量>3 时返回解锁标志
+      let unlockedHidden = false;
+      if (!isHidden && bossesDefeated === 10 && typeof playerHearts === 'number' && playerHearts > 3) {
+        unlockedHidden = true;
+      }
+
+      // 隐藏模式：解锁被击败Boss的皮肤
+      let unlockedSkins = [];
+      if (isHidden && bossesDefeated > 0) {
+        // 根据主题和Boss数确定哪些Boss被击败
+        const mcBossNames = ['zombie','mc_skeleton','creeper','enderman','blaze','wither','ender_dragon'];
+        const pvzBossNames = ['pvz_basic','pvz_cone','pvz_bucket','pvz_disco','pvz_football','pvz_gargantuar','pvz_zomboss'];
+        const tankBossNames = ['tank_darkbear','tank_xiaozha','tank_sherman','tank_xiaoban','tank_xiaolv','tank_zhuguli','tank_dahu'];
+        const themeMap = { minecraft: mcBossNames, pvz: pvzBossNames, tank: tankBossNames };
+        const bossNames = themeMap[mode === 'hidden' ? (body.theme || 'minecraft') : 'minecraft'] || mcBossNames;
+
+        for (let i = 0; i < bossesDefeated && i < bossNames.length; i++) {
+          const alreadyHas = (db.skinUnlocks || []).some(s => s.studentId === studentId && s.bossIcon === bossNames[i]);
+          if (!alreadyHas) {
+            const skin = {
+              id: generateId(),
+              studentId,
+              bossIcon: bossNames[i],
+              theme: (body.theme || 'minecraft'),
+              unlockedAt: now(),
+            };
+            db.skinUnlocks.push(skin);
+            unlockedSkins.push(skin);
+          }
+        }
+      }
+
+      saveDb(db);
+
+      const newBalance = db.points
+        .filter(p => p.studentId === studentId)
+        .reduce((sum, p) => sum + p.amount, 0);
+
+      jsonResponse(res, 200, {
+        success: true,
+        bossesDefeated,
+        totalQuestions,
+        correctCount,
+        reward,
+        pointBalance: newBalance,
+        unlockedHidden,
+        unlockedSkins,
+      });
+      return;
+    }
+
+    // 获取已解锁皮肤
+    const skinMatch = pathname.match(/^\/api\/math-boss\/skins\/([^/]+)$/);
+    if (skinMatch && method === 'GET') {
+      const studentId = skinMatch[1];
+      const skins = (db.skinUnlocks || []).filter(s => s.studentId === studentId);
+      jsonResponse(res, 200, { skins });
       return;
     }
 
