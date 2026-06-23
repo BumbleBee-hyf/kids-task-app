@@ -1,0 +1,11 @@
+node_modules
+dist
+dist-ssr
+coverage
+*.local
+server/db.json
+pnpm-lock.yaml
+package-lock.json
+CHANGELOG.md
+*.min.js
+*.min.css
