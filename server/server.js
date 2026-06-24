@@ -1139,7 +1139,7 @@ const server = http.createServer(async (req, res) => {
 
       // 检查今日是否有通关10个且血量>3的记录（每日解锁）
       const todayCleared = (db.mathBossRecords || []).some(
-        r => r.studentId === studentId && r.date === today && r.mode === 'normal' && r.bossesDefeated === 10 && (r.playerHearts || 0) > 3
+        r => r.studentId === studentId && r.date === today && r.mode === 'normal' && r.bossesDefeated === 10 && (r.playerHearts || 0) >= 3
       );
 
       jsonResponse(res, 200, {
@@ -1159,7 +1159,7 @@ const server = http.createServer(async (req, res) => {
 
       // 检查今日是否有通关10个且血量>3的记录
       const todayCleared = (db.mathBossRecords || []).some(
-        r => r.studentId === studentId && r.date === today && r.mode === 'normal' && r.bossesDefeated === 10 && (r.playerHearts || 0) > 3
+        r => r.studentId === studentId && r.date === today && r.mode === 'normal' && r.bossesDefeated === 10 && (r.playerHearts || 0) >= 3
       );
       const todayRecords = (db.mathBossRecords || []).filter(
         r => r.studentId === studentId && r.date === today && r.mode === 'hidden'
@@ -1200,10 +1200,10 @@ const server = http.createServer(async (req, res) => {
       if (isHidden) {
         const today = getLocalDateStr();
         const todayCleared = (db.mathBossRecords || []).some(
-          r => r.studentId === studentId && r.date === today && r.mode === 'normal' && r.bossesDefeated === 10 && (r.playerHearts || 0) > 3
+          r => r.studentId === studentId && r.date === today && r.mode === 'normal' && r.bossesDefeated === 10 && (r.playerHearts || 0) >= 3
         );
         if (!todayCleared) {
-          jsonResponse(res, 400, { error: '隐藏关卡尚未解锁！需要普通模式通关10关且血量大于3' });
+          jsonResponse(res, 400, { error: '隐藏关卡尚未解锁！需要普通模式通关10关且血量大于等于3' });
           return;
         }
       }
@@ -1310,7 +1310,7 @@ const server = http.createServer(async (req, res) => {
 
       // 普通模式：通关10个且血量>3 时返回解锁标志
       let unlockedHidden = false;
-      if (!isHidden && bossesDefeated === 10 && typeof playerHearts === 'number' && playerHearts > 3) {
+      if (!isHidden && bossesDefeated === 10 && typeof playerHearts === 'number' && playerHearts >= 3) {
         unlockedHidden = true;
       }
 
