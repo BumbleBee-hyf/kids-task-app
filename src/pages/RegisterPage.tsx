@@ -1,34 +1,34 @@
-import { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
-import { useAuth } from '../contexts/AuthContext';
+import { useState } from 'react'
+import { useNavigate, Link } from 'react-router-dom'
+import { useAuth } from '../contexts/AuthContext'
 
 export default function RegisterPage() {
-  const { register } = useAuth();
-  const navigate = useNavigate();
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
-  const [displayName, setDisplayName] = useState('');
-  const [role, setRole] = useState<'student' | 'parent'>('student');
-  const [error, setError] = useState('');
-  const [loading, setLoading] = useState(false);
+  const { register } = useAuth()
+  const navigate = useNavigate()
+  const [username, setUsername] = useState('')
+  const [password, setPassword] = useState('')
+  const [displayName, setDisplayName] = useState('')
+  const [role, setRole] = useState<'student' | 'parent'>('student')
+  const [error, setError] = useState('')
+  const [loading, setLoading] = useState(false)
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError('');
-    setLoading(true);
+    e.preventDefault()
+    setError('')
+    setLoading(true)
     try {
-      const result = await register(username.trim(), password, displayName.trim(), role);
+      const result = await register(username.trim(), password, displayName.trim(), role)
       if (result.success) {
-        navigate('/login-redirect');
+        navigate('/login-redirect')
       } else {
-        setError(result.error || '注册失败');
+        setError(result.error || '注册失败')
       }
     } catch {
-      setError('网络错误，请检查后端服务是否启动');
+      setError('网络错误，请检查后端服务是否启动')
     } finally {
-      setLoading(false);
+      setLoading(false)
     }
-  };
+  }
 
   return (
     <div className="login-page">
@@ -65,7 +65,7 @@ export default function RegisterPage() {
               className="form-input"
               type="text"
               value={displayName}
-              onChange={e => setDisplayName(e.target.value)}
+              onChange={(e) => setDisplayName(e.target.value)}
               placeholder="让大家认识你"
             />
           </div>
@@ -75,7 +75,7 @@ export default function RegisterPage() {
               className="form-input"
               type="text"
               value={username}
-              onChange={e => setUsername(e.target.value)}
+              onChange={(e) => setUsername(e.target.value)}
               placeholder="用于登录"
               autoFocus
             />
@@ -86,7 +86,7 @@ export default function RegisterPage() {
               className="form-input"
               type="password"
               value={password}
-              onChange={e => setPassword(e.target.value)}
+              onChange={(e) => setPassword(e.target.value)}
               placeholder="至少 4 位"
             />
           </div>
@@ -100,5 +100,5 @@ export default function RegisterPage() {
         </div>
       </div>
     </div>
-  );
+  )
 }

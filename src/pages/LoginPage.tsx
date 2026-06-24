@@ -1,37 +1,37 @@
-import { useState } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
-import { useAuth } from '../contexts/AuthContext';
-import '../styles/Login.module.css';
+import { useState } from 'react'
+import { useNavigate, Link } from 'react-router-dom'
+import { useAuth } from '../contexts/AuthContext'
+import '../styles/Login.module.css'
 
 export default function LoginPage() {
-  const { login } = useAuth();
-  const navigate = useNavigate();
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
-  const [loading, setLoading] = useState(false);
+  const { login } = useAuth()
+  const navigate = useNavigate()
+  const [username, setUsername] = useState('')
+  const [password, setPassword] = useState('')
+  const [error, setError] = useState('')
+  const [loading, setLoading] = useState(false)
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError('');
+    e.preventDefault()
+    setError('')
     if (!username.trim() || !password.trim()) {
-      setError('请输入用户名和密码');
-      return;
+      setError('请输入用户名和密码')
+      return
     }
-    setLoading(true);
+    setLoading(true)
     try {
-      const result = await login(username.trim(), password);
+      const result = await login(username.trim(), password)
       if (result.success) {
-        navigate('/login-redirect');
+        navigate('/login-redirect')
       } else {
-        setError(result.error || '登录失败');
+        setError(result.error || '登录失败')
       }
     } catch {
-      setError('网络错误，请检查后端服务是否启动');
+      setError('网络错误，请检查后端服务是否启动')
     } finally {
-      setLoading(false);
+      setLoading(false)
     }
-  };
+  }
 
   return (
     <div className="login-page">
@@ -48,7 +48,7 @@ export default function LoginPage() {
               className="form-input"
               type="text"
               value={username}
-              onChange={e => setUsername(e.target.value)}
+              onChange={(e) => setUsername(e.target.value)}
               placeholder="请输入用户名"
               autoFocus
             />
@@ -59,7 +59,7 @@ export default function LoginPage() {
               className="form-input"
               type="password"
               value={password}
-              onChange={e => setPassword(e.target.value)}
+              onChange={(e) => setPassword(e.target.value)}
               placeholder="请输入密码"
             />
           </div>
@@ -77,5 +77,5 @@ export default function LoginPage() {
         </div>
       </div>
     </div>
-  );
+  )
 }

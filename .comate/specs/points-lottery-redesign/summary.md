@@ -7,35 +7,39 @@
 ## 修改文件清单
 
 ### 后端
-| 文件 | 变更 |
-|------|------|
+
+| 文件               | 变更                                                                                                                               |
+| ------------------ | ---------------------------------------------------------------------------------------------------------------------------------- |
 | `server/server.js` | 新增积分 API（4个端点）、修改审批逻辑（发积分而非代金券）、新增抽奖 draw API（积分扣减+代金券发放）、保留旧 lottery/increment 兼容 |
-| `server/db.json` | 新增 `points` 数组，清理旧代金券数据 |
+| `server/db.json`   | 新增 `points` 数组，清理旧代金券数据                                                                                               |
 
 ### 前端 - 类型与服务
-| 文件 | 变更 |
-|------|------|
-| `src/types/index.ts` | 新增 PointRecord、PointSource 类型、LOTTERY_POINT_COST 常量、POINTS 存储 Key |
-| `src/services/storageService.ts` | 新增 pointStorage（4个方法）、lotteryStorage.draw 方法 |
+
+| 文件                             | 变更                                                                         |
+| -------------------------------- | ---------------------------------------------------------------------------- |
+| `src/types/index.ts`             | 新增 PointRecord、PointSource 类型、LOTTERY_POINT_COST 常量、POINTS 存储 Key |
+| `src/services/storageService.ts` | 新增 pointStorage（4个方法）、lotteryStorage.draw 方法                       |
 
 ### 前端 - 上下文
-| 文件 | 变更 |
-|------|------|
-| `src/contexts/PointsContext.tsx` | **新建** - 积分余额、积分记录管理 |
-| `src/contexts/LotteryContext.tsx` | 重写 - 移除免费次数逻辑，改为积分消耗模式 |
+
+| 文件                              | 变更                                         |
+| --------------------------------- | -------------------------------------------- |
+| `src/contexts/PointsContext.tsx`  | **新建** - 积分余额、积分记录管理            |
+| `src/contexts/LotteryContext.tsx` | 重写 - 移除免费次数逻辑，改为积分消耗模式    |
 | `src/contexts/VoucherContext.tsx` | 未改动（逻辑不变，兼容 task_bonus 历史数据） |
-| `src/contexts/TaskContext.tsx` | 未改动（审批后积分发放由后端处理） |
+| `src/contexts/TaskContext.tsx`    | 未改动（审批后积分发放由后端处理）           |
 
 ### 前端 - 页面与组件
-| 文件 | 变更 |
-|------|------|
-| `src/App.tsx` | 注册 PointsProvider |
-| `src/pages/student/StudentDashboard.tsx` | 展示积分余额 + 代金券余额（原代金券余额改为积分余额卡片） |
-| `src/pages/student/LotteryPage.tsx` | 使用积分校验、调用新 draw API、积分不足时禁用 |
-| `src/pages/student/VoucherPage.tsx` | 新增积分/代金券双余额展示、积分明细 Tab、兼容 task_bonus 历史数据 |
-| `src/components/LotteryCountCard.tsx` | 重写为展示积分余额、可抽奖次数、每次消耗积分数 |
-| `src/components/LuckyBox.tsx` | 提示文案改为"积分不足" |
-| `src/components/LuckyWheel.tsx` | 规则文案改为"每次抽奖消耗10积分" |
+
+| 文件                                     | 变更                                                              |
+| ---------------------------------------- | ----------------------------------------------------------------- |
+| `src/App.tsx`                            | 注册 PointsProvider                                               |
+| `src/pages/student/StudentDashboard.tsx` | 展示积分余额 + 代金券余额（原代金券余额改为积分余额卡片）         |
+| `src/pages/student/LotteryPage.tsx`      | 使用积分校验、调用新 draw API、积分不足时禁用                     |
+| `src/pages/student/VoucherPage.tsx`      | 新增积分/代金券双余额展示、积分明细 Tab、兼容 task_bonus 历史数据 |
+| `src/components/LotteryCountCard.tsx`    | 重写为展示积分余额、可抽奖次数、每次消耗积分数                    |
+| `src/components/LuckyBox.tsx`            | 提示文案改为"积分不足"                                            |
+| `src/components/LuckyWheel.tsx`          | 规则文案改为"每次抽奖消耗10积分"                                  |
 
 ## 核心业务链路
 

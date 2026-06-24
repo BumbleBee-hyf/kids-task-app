@@ -1,6 +1,8 @@
 import { describe, it, expect } from 'vitest'
 import http from 'http'
 
+const PORT = 3001
+
 // ============ Lightweight HTTP Client ============
 function request(options) {
   return new Promise((resolve, reject) => {
@@ -8,7 +10,7 @@ function request(options) {
     const req = http.request(
       {
         hostname: 'localhost',
-        port: 3001,
+        port: PORT,
         path: options.path,
         method: options.method,
         headers: {

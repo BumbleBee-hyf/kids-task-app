@@ -1,86 +1,86 @@
-import { useState, useEffect, useCallback } from 'react';
-import { useAuth } from '../../contexts/AuthContext';
-import { useTasks } from '../../contexts/TaskContext';
-import { useVouchers } from '../../contexts/VoucherContext';
-import { userStorage } from '../../services/storageService';
-import type { TaskRating, User, WithdrawRequest } from '../../types';
-import ApprovalForm from '../../components/ApprovalForm';
-import '../../styles/TaskManagement.module.css';
-import '../../styles/Voucher.module.css';
+import { useState, useEffect, useCallback } from 'react'
+import { useAuth } from '../../contexts/AuthContext'
+import { useTasks } from '../../contexts/TaskContext'
+import { useVouchers } from '../../contexts/VoucherContext'
+import { userStorage } from '../../services/storageService'
+import type { TaskRating, User, WithdrawRequest } from '../../types'
+import ApprovalForm from '../../components/ApprovalForm'
+import '../../styles/TaskManagement.module.css'
+import '../../styles/Voucher.module.css'
 
 export default function ApprovalPage() {
-  const { user } = useAuth();
-  const { tasks, approveTask, rejectTask, refreshTasks } = useTasks();
-  const { getPendingWithdraws, approveWithdraw, rejectWithdraw } = useVouchers();
-  const [processingId, setProcessingId] = useState<string | null>(null);
-  const [activeTab, setActiveTab] = useState<'tasks' | 'withdraws'>('tasks');
-  const [students, setStudents] = useState<User[]>([]);
-  const [pendingWithdraws, setPendingWithdraws] = useState<WithdrawRequest[]>([]);
+  const { user } = useAuth()
+  const { tasks, approveTask, rejectTask, refreshTasks } = useTasks()
+  const { getPendingWithdraws, approveWithdraw, rejectWithdraw } = useVouchers()
+  const [processingId, setProcessingId] = useState<string | null>(null)
+  const [activeTab, setActiveTab] = useState<'tasks' | 'withdraws'>('tasks')
+  const [students, setStudents] = useState<User[]>([])
+  const [pendingWithdraws, setPendingWithdraws] = useState<WithdrawRequest[]>([])
 
   useEffect(() => {
-    refreshTasks();
-    userStorage.getStudents().then(setStudents);
-  }, [refreshTasks]);
+    refreshTasks()
+    userStorage.getStudents().then(setStudents)
+  }, [refreshTasks])
 
   const loadPendingWithdraws = useCallback(async () => {
-    const list = await getPendingWithdraws();
-    setPendingWithdraws(list);
-  }, [getPendingWithdraws]);
+    const list = await getPendingWithdraws()
+    setPendingWithdraws(list)
+  }, [getPendingWithdraws])
 
   useEffect(() => {
-    loadPendingWithdraws();
-  }, [loadPendingWithdraws]);
+    loadPendingWithdraws()
+  }, [loadPendingWithdraws])
 
   // Tab切换时刷新数据
   useEffect(() => {
     if (activeTab === 'tasks') {
-      refreshTasks();
+      refreshTasks()
     } else {
-      loadPendingWithdraws();
+      loadPendingWithdraws()
     }
-  }, [activeTab, refreshTasks, loadPendingWithdraws]);
+  }, [activeTab, refreshTasks, loadPendingWithdraws])
 
-  const submittedTasks = tasks.filter(t => t.status === 'submitted');
+  const submittedTasks = tasks.filter((t) => t.status === 'submitted')
 
   const getStudentName = (studentId: string) => {
-    const s = students.find(u => u.id === studentId);
-    return s?.displayName || '未知学生';
-  };
+    const s = students.find((u) => u.id === studentId)
+    return s?.displayName || '未知学生'
+  }
 
   const handleApprove = async (taskId: string, rating: TaskRating) => {
-    setProcessingId(taskId);
+    setProcessingId(taskId)
     try {
-      await approveTask(taskId, rating);
+      await approveTask(taskId, rating)
     } finally {
-      setProcessingId(null);
+      setProcessingId(null)
     }
-  };
+  }
 
   const handleReject = async (taskId: string) => {
-    setProcessingId(taskId);
+    setProcessingId(taskId)
     try {
-      await rejectTask(taskId);
+      await rejectTask(taskId)
     } finally {
-      setProcessingId(null);
+      setProcessingId(null)
     }
-  };
+  }
 
   const handleApproveWithdraw = async (id: string) => {
-    if (!user) return;
-    setProcessingId(id);
+    if (!user) return
+    setProcessingId(id)
     try {
-      await approveWithdraw(id, user.id);
-      await loadPendingWithdraws();
+      await approveWithdraw(id, user.id)
+      await loadPendingWithdraws()
     } finally {
-      setProcessingId(null);
+      setProcessingId(null)
     }
-  };
+  }
 
   const handleRejectWithdraw = async (id: string) => {
-    if (!user) return;
-    await rejectWithdraw(id, user.id);
-    await loadPendingWithdraws();
-  };
+    if (!user) return
+    await rejectWithdraw(id, user.id)
+    await loadPendingWithdraws()
+  }
 
   return (
     <div className="page-container">
@@ -109,7 +109,7 @@ export default function ApprovalPage() {
               <p>没有待审批的任务</p>
             </div>
           ) : (
-            submittedTasks.map(task => (
+            submittedTasks.map((task) => (
               <ApprovalForm
                 key={task.id}
                 task={task}
@@ -131,7 +131,7 @@ export default function ApprovalPage() {
               <p>没有待审批的提现申请</p>
             </div>
           ) : (
-            pendingWithdraws.map(w => (
+            pendingWithdraws.map((w) => (
               <div key={w.id} className="card withdraw-approval-card">
                 <div className="withdraw-approval-info">
                   <span className="stat-emoji">💸</span>
@@ -164,5 +164,5 @@ export default function ApprovalPage() {
         </>
       )}
     </div>
-  );
+  )
 }

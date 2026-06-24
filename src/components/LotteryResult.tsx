@@ -1,33 +1,33 @@
-import { useEffect, useCallback, useState } from 'react';
-import { createPortal } from 'react-dom';
-import styles from '../styles/Lottery.module.css';
+import { useEffect, useCallback, useState } from 'react'
+import { createPortal } from 'react-dom'
+import styles from '../styles/Lottery.module.css'
 
 interface LotteryResultProps {
-  visible: boolean;
-  amount: number;
-  type: 'money' | 'joke';
-  tier?: 'normal' | 'joke' | 'grand';
-  jokeEmoji?: string;
-  canContinue?: boolean;
-  onClose: () => void;
-  onContinue: () => void;
+  visible: boolean
+  amount: number
+  type: 'money' | 'joke'
+  tier?: 'normal' | 'joke' | 'grand'
+  jokeEmoji?: string
+  canContinue?: boolean
+  onClose: () => void
+  onContinue: () => void
 }
 
 interface Confetti {
-  id: number;
-  left: number;
-  color: string;
-  delay: number;
-  duration: number;
-  shape: 'square' | 'circle';
+  id: number
+  left: number
+  color: string
+  delay: number
+  duration: number
+  shape: 'square' | 'circle'
 }
 
-const CONFETTI_COLORS = ['#FF8C42', '#FFA559', '#D4A853', '#FF6B9D', '#4ADE80', '#FBBF24'];
-const GRAND_CONFETTI_COLORS = ['#FFD700', '#FFA500', '#FF8C00', '#FFE4B5', '#F0E68C'];
+const CONFETTI_COLORS = ['#FF8C42', '#FFA559', '#D4A853', '#FF6B9D', '#4ADE80', '#FBBF24']
+const GRAND_CONFETTI_COLORS = ['#FFD700', '#FFA500', '#FF8C00', '#FFE4B5', '#F0E68C']
 
 function generateConfetti(grand = false): Confetti[] {
-  const colors = grand ? GRAND_CONFETTI_COLORS : CONFETTI_COLORS;
-  const count = grand ? 80 : 50;
+  const colors = grand ? GRAND_CONFETTI_COLORS : CONFETTI_COLORS
+  const count = grand ? 80 : 50
   return Array.from({ length: count }, (_, i) => ({
     id: i,
     left: Math.random() * 100,
@@ -35,29 +35,38 @@ function generateConfetti(grand = false): Confetti[] {
     delay: Math.random() * 0.5,
     duration: 2 + Math.random() * 2,
     shape: Math.random() > 0.5 ? 'square' : 'circle',
-  }));
+  }))
 }
 
-export default function LotteryResult({ visible, amount, type, tier = 'normal', jokeEmoji, canContinue = true, onClose, onContinue }: LotteryResultProps) {
-  const [confetti, setConfetti] = useState<Confetti[]>([]);
+export default function LotteryResult({
+  visible,
+  amount,
+  type,
+  tier = 'normal',
+  jokeEmoji,
+  canContinue = true,
+  onClose,
+  onContinue,
+}: LotteryResultProps) {
+  const [confetti, setConfetti] = useState<Confetti[]>([])
 
-  const isGrand = tier === 'grand';
+  const isGrand = tier === 'grand'
 
   useEffect(() => {
     if (visible) {
-      setConfetti(generateConfetti(isGrand));
+      setConfetti(generateConfetti(isGrand))
       // 清理彩纸
-      const timer = setTimeout(() => setConfetti([]), 4000);
-      return () => clearTimeout(timer);
+      const timer = setTimeout(() => setConfetti([]), 4000)
+      return () => clearTimeout(timer)
     }
-  }, [visible, isGrand]);
+  }, [visible, isGrand])
 
   const handleContinue = useCallback(() => {
-    onContinue();
-    onClose();
-  }, [onContinue, onClose]);
+    onContinue()
+    onClose()
+  }, [onContinue, onClose])
 
-  if (!visible) return null;
+  if (!visible) return null
 
   const modalContent = (
     <>
@@ -80,7 +89,10 @@ export default function LotteryResult({ visible, amount, type, tier = 'normal', 
 
       {/* 弹窗 */}
       <div className={styles.resultOverlay} onClick={onClose}>
-        <div className={`${styles.resultModal} ${isGrand ? styles.resultGrandModal : ''}`} onClick={(e) => e.stopPropagation()}>
+        <div
+          className={`${styles.resultModal} ${isGrand ? styles.resultGrandModal : ''}`}
+          onClick={(e) => e.stopPropagation()}
+        >
           {tier === 'grand' ? (
             <>
               <span className={`${styles.resultEmoji} ${styles.resultGrandEmoji}`}>🏆</span>
@@ -101,11 +113,17 @@ export default function LotteryResult({ visible, amount, type, tier = 'normal', 
             </>
           )}
           <div className={styles.resultActions}>
-            <button className={`${styles.resultBtn} ${styles.resultBtnSecondary}`} onClick={onClose}>
+            <button
+              className={`${styles.resultBtn} ${styles.resultBtnSecondary}`}
+              onClick={onClose}
+            >
               关闭
             </button>
             {canContinue && (
-              <button className={`${styles.resultBtn} ${styles.resultBtnPrimary}`} onClick={handleContinue}>
+              <button
+                className={`${styles.resultBtn} ${styles.resultBtnPrimary}`}
+                onClick={handleContinue}
+              >
                 再来一次
               </button>
             )}
@@ -113,8 +131,8 @@ export default function LotteryResult({ visible, amount, type, tier = 'normal', 
         </div>
       </div>
     </>
-  );
+  )
 
   // 使用 Portal 渲染到 body
-  return createPortal(modalContent, document.body);
+  return createPortal(modalContent, document.body)
 }

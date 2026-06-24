@@ -1,16 +1,22 @@
-import type { Task, TaskRating } from '../types';
+import type { Task, TaskRating } from '../types'
 
 interface Props {
-  task: Task;
-  studentName: string;
-  onApprove: (taskId: string, rating: TaskRating) => void;
-  onReject: (taskId: string) => void;
-  processing: boolean;
+  task: Task
+  studentName: string
+  onApprove: (taskId: string, rating: TaskRating) => void
+  onReject: (taskId: string) => void
+  processing: boolean
 }
 
-export default function ApprovalForm({ task, studentName, onApprove, onReject, processing }: Props) {
-  const excellentPoints = task.basePoints;
-  const goodPoints = Math.floor(task.basePoints * 0.8);
+export default function ApprovalForm({
+  task,
+  studentName,
+  onApprove,
+  onReject,
+  processing,
+}: Props) {
+  const excellentPoints = task.basePoints
+  const goodPoints = Math.floor(task.basePoints * 0.8)
 
   return (
     <div className="card approval-card">
@@ -76,5 +82,5 @@ export default function ApprovalForm({ task, studentName, onApprove, onReject, p
         </button>
       </div>
     </div>
-  );
+  )
 }
