@@ -19,6 +19,29 @@ export default function StudentDashboard() {
   }>({ checkedInToday: false, streak: 0, hasCompletedTask: false, checkinPoints: 10 });
   const [checkinLoading, setCheckinLoading] = useState(false);
 
+  const loadAllData = async () => {
+    if (!user) return;
+    refreshTasks();
+    await refreshBalance(user.id);
+    const bal = await voucherStorage.getBalance(user.id);
+    setVoucherBalance(bal);
+    const status = await checkinStorage.getStatus(user.id);
+    setCheckinStatus(status);
+  };
+
+  useEffect(() => {
+    if (!user) return;
+    loadAllData();
+  }, [user?.id]);
+
+  // 页面获得焦点时刷新余额
+  useEffect(() => {
+    if (!user) return;
+    const onFocus = () => { loadAllData(); };
+    window.addEventListener('focus', onFocus);
+    return () => window.removeEventListener('focus', onFocus);
+  }, [user?.id]);
+
   if (!user) return null;
   const myTasks = getTasksByStudent(user.id);
   const pendingCount = myTasks.filter(t => t.status === 'pending').length;
@@ -31,27 +54,6 @@ export default function StudentDashboard() {
     return t.approvedAt.startsWith(today);
   });
   const todayPoints = todayApproved.reduce((sum, t) => sum + (t.finalPoints || 0), 0);
-
-  const loadAllData = async () => {
-    if (!user) return;
-    refreshTasks();
-    await refreshBalance(user.id);
-    const bal = await voucherStorage.getBalance(user.id);
-    setVoucherBalance(bal);
-    const status = await checkinStorage.getStatus(user.id);
-    setCheckinStatus(status);
-  };
-
-  useEffect(() => {
-    loadAllData();
-  }, [user.id]);
-
-  // 页面获得焦点时刷新余额
-  useEffect(() => {
-    const onFocus = () => { loadAllData(); };
-    window.addEventListener('focus', onFocus);
-    return () => window.removeEventListener('focus', onFocus);
-  }, [user.id]);
 
   const handleCheckin = async () => {
     if (!user || checkinLoading) return;

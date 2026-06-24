@@ -54,7 +54,7 @@ export default function LotteryPage() {
   }));
 
   // 抽箱子中奖回调
-  const handleBoxWin = useCallback(async (_prize: { amount: number }) => {
+  const handleBoxWin = useCallback(async () => {
     if (!user) return;
     const result = await drawBox(user.id, pointBalance);
     if (result.success) {
@@ -64,7 +64,7 @@ export default function LotteryPage() {
   }, [user, pointBalance, drawBox, refreshBalance, refreshVouchers]);
 
   // 大转盘结束回调
-  const handleWheelEnd = useCallback(async (_prize: { amount: number }) => {
+  const handleWheelEnd = useCallback(async () => {
     if (!user) return;
     const result = await spinWheel(user.id, pointBalance);
     if (result.success) {
