@@ -1,6 +1,8 @@
 import { useRef, useState, useCallback, useEffect, useMemo } from 'react'
+import gsap from 'gsap'
 import styles from '../styles/Lottery.module.css'
 import LotteryResult from './LotteryResult'
+import { useSoundContext } from '../contexts/SoundContext'
 
 interface WheelPrize {
   label: string
@@ -61,11 +63,14 @@ export default function LuckyWheel({
   disabled,
 }: LuckyWheelProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
+  const wheelWrapperRef = useRef<HTMLDivElement>(null)
   const [isSpinning, setIsSpinning] = useState(false)
   const [rotation, setRotation] = useState(0)
   const [winResult, setWinResult] = useState<WheelPrize | null>(null)
   const [showResult, setShowResult] = useState(false)
   const [lightsOn, setLightsOn] = useState(true)
+  const [chaseActive, setChaseActive] = useState(false)
+  const { play: playSound } = useSoundContext()
 
   // 绘制转盘
   useEffect(() => {
@@ -174,11 +179,14 @@ export default function LuckyWheel({
     return () => clearInterval(interval)
   }, [])
 
-  // 开始旋转
+  // 开始旋转 — GSAP-powered with tick feedback
   const handleSpin = useCallback(() => {
     if (disabled || isSpinning) return
 
     setIsSpinning(true)
+    setChaseActive(true)
+    playSound('click')
+
     const winIndex = weightedRandom(prizes)
     const winPrize = { ...prizes[winIndex] }
     // 恶搞奖品随机选一个 emoji
@@ -191,16 +199,35 @@ export default function LuckyWheel({
     // 加上多圈旋转
     const totalRotation = rotation + 360 * 5 + targetAngle - (rotation % 360)
 
-    setRotation(totalRotation)
+    // GSAP-powered rotation with tick callbacks
+    const rotationObj = { value: rotation }
+    const segmentDeg = segmentAngle
+    let lastSegment = -1
 
-    // 动画结束后处理
-    setTimeout(() => {
-      setIsSpinning(false)
-      setWinResult(winPrize)
-      onSpinEnd(winPrize)
-      setShowResult(true)
-    }, 4000)
-  }, [disabled, isSpinning, prizes, rotation, onSpinEnd])
+    gsap.to(rotationObj, {
+      value: totalRotation,
+      duration: 4,
+      ease: 'power4.out', // Decelerating — feels like real wheel
+      onUpdate: () => {
+        setRotation(rotationObj.value)
+
+        // Tick sound when passing each segment
+        const currentSegment = Math.floor((rotationObj.value % 360) / segmentDeg)
+        if (currentSegment !== lastSegment) {
+          lastSegment = currentSegment
+          playSound('wheel_tick')
+        }
+      },
+      onComplete: () => {
+        setIsSpinning(false)
+        setChaseActive(false)
+        setWinResult(winPrize)
+        onSpinEnd(winPrize)
+        playSound('wheel_win')
+        setShowResult(true)
+      },
+    })
+  }, [disabled, isSpinning, prizes, rotation, onSpinEnd, playSound])
 
   // 关闭结果弹窗
   const handleCloseResult = useCallback(() => {
@@ -234,12 +261,12 @@ export default function LuckyWheel({
 
       {/* 中间转盘 */}
       <div className={styles.wheelOuter}>
-        {/* LED 灯圈 */}
+        {/* LED 灯圈 — 追逐动画 */}
         <div className={styles.wheelLights}>
           {lights.map((light, i) => (
             <div
               key={i}
-              className={`${styles.wheelLight} ${lightsOn ? styles.on : ''}`}
+              className={`${styles.wheelLight} ${chaseActive ? styles.chase : lightsOn ? styles.on : ''}`}
               style={{
                 transform: `translate(calc(-50% + ${light.x}px), calc(-50% + ${light.y}px))`,
                 animationDelay: `${i * 0.05}s`,
@@ -248,7 +275,7 @@ export default function LuckyWheel({
           ))}
         </div>
 
-        <div className={styles.wheelWrapper}>
+        <div ref={wheelWrapperRef} className={styles.wheelWrapper}>
           {/* 指针 - 粉红色 */}
           <div className={`${styles.wheelPointer} ${isSpinning ? styles.bounce : ''}`}>
             <svg viewBox="0 0 36 44" fill="none">

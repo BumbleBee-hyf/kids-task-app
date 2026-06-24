@@ -1,8 +1,12 @@
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
+import gsap from 'gsap'
 import { useAuth } from '../../contexts/AuthContext'
 import { usePoints } from '../../contexts/PointsContext'
 import { useMathBoss } from '../../contexts/MathBossContext'
+import { useSoundContext } from '../../contexts/SoundContext'
+import { useParticleCanvas } from '../../hooks/useParticleCanvas'
+import { shakeScreen } from '../../engine/BattleTimelines'
 import type { AttackType } from '../../contexts/MathBossContext'
 import {
   MATH_BOSSES,
@@ -77,6 +81,9 @@ export default function MathBossPage() {
   const { user } = useAuth()
   const navigate = useNavigate()
   const { balance: pointBalance, refreshBalance } = usePoints()
+  const { play: playSound } = useSoundContext()
+  const { containerRef: particleContainerRef, emit: emitParticle, clear: clearParticles, ready: particlesReady } = useParticleCanvas()
+  const battleStageRef = useRef<HTMLDivElement>(null)
   const {
     phase,
     gameMode,
@@ -113,7 +120,6 @@ export default function MathBossPage() {
   const [animPhase, setAnimPhase] = useState<AnimPhase>('idle')
   const [showCombo, setShowCombo] = useState(false)
   const [showFlash, setShowFlash] = useState(false)
-  const [screenEffect, setScreenEffect] = useState<string | null>(null)
   const [showScreenFlash, setShowScreenFlash] = useState(false)
   const [lostHeartIndex, setLostHeartIndex] = useState(-1)
   const [prevPlayerHearts, setPrevPlayerHearts] = useState(PLAYER_MAX_HEARTS)
@@ -192,6 +198,13 @@ export default function MathBossPage() {
     setPrevPlayerHearts(playerHearts)
   }, [playerHearts, prevPlayerHearts])
 
+  // 连击音效
+  useEffect(() => {
+    if (comboCount >= 7) playSound('combo_7')
+    else if (comboCount >= 5) playSound('combo_5')
+    else if (comboCount >= 3) playSound('combo_3')
+  }, [comboCount, playSound])
+
   // ===== 普通模式：数字输入 =====
   const handleNumClick = useCallback(
     (num: number) => {
@@ -223,7 +236,8 @@ export default function MathBossPage() {
       const isGameOver = result.gameOver
       setAnswerState(isGameOver ? 'wrong' : 'wrongFeedback')
       setAnimPhase('bossAttack')
-      setScreenEffect('shakeLight')
+      playSound('wrong')
+      shakeScreen(battleStageRef.current, 'light')
 
       // Boss攻击浮动伤害
       const isHardBoss = gameMode !== 'hidden' && currentBossIndex >= 7
@@ -239,23 +253,35 @@ export default function MathBossPage() {
         isCritical: false,
         slideRight: true,
       })
-      setTimeout(() => setFloatingDmg(null), 1000)
-      setTimeout(() => {
+
+      // GSAP timeline for wrong answer animation
+      const wrongTl = gsap.timeline()
+      wrongTl.call(() => setFloatingDmg(null), [], '+=0.8')
+      wrongTl.call(() => {
         setAnimPhase('playerHurt')
         setHitExplosion({ side: 'player', color: projColor })
-        setTimeout(() => {
-          setScreenEffect(null)
-          setHitExplosion(null)
-        }, 600)
-      }, 400)
+        playSound('boss_hit')
+        // Canvas particles for player hit
+        if (particlesReady) {
+          emitParticle('heartBreak', {
+            x: battleStageRef.current ? battleStageRef.current.clientWidth * 0.25 : 100,
+            y: battleStageRef.current ? battleStageRef.current.clientHeight * 0.45 : 150,
+            overrides: {
+              colors: [parseInt(projColor.replace('#', ''), 16), 0xff4757, 0xff6b81],
+            },
+          })
+        }
+      }, [], '+=0.2')
+      wrongTl.to({}, { duration: 0.6 })
+      wrongTl.call(() => setHitExplosion(null))
 
       if (isGameOver) {
-        setTimeout(() => {
+        wrongTl.call(() => {
           setAnimPhase('playerDefeat')
           setTimeout(() => {
             if (user) finishGame(user.id)
           }, 1000)
-        }, 800)
+        }, [], '+=0.3')
       }
       // 不再自动跳题，等待 handleWrongConfirm
       return
@@ -263,6 +289,7 @@ export default function MathBossPage() {
 
     // 答对 — 先显示"正确"
     setAnswerState('correct')
+    playSound('correct')
 
     // 有技能可选？
     const hasSkills = result.availableSkills.length > 1
@@ -283,6 +310,9 @@ export default function MathBossPage() {
     checkAnswer,
     fetchNextQuestion,
     finishGame,
+    playSound,
+    particlesReady,
+    emitParticle,
   ])
 
   // ===== 选择技能后执行攻击 =====
@@ -301,91 +331,153 @@ export default function MathBossPage() {
       // Boss受击颜色
       setBossHitColor(projColor)
 
-      // 浮动伤害数字
-      setFloatingDmg({
-        value: atkResult.damage,
-        color: type === 'normal' ? '#FFD700' : type === 'shadowStrike' ? '#A855F7' : '#EF4444',
-        x: 65,
-        y: 30,
-        isCritical: type !== 'normal',
-      })
-      setTimeout(() => setFloatingDmg(null), 800)
-
-      // 动画阶段
-      if (type === 'shadowStrike') {
-        setAnimPhase('shadowStrike')
-        // 暗影突刺分步特效
-        setSkillEffects(['vignette'])
-        setTimeout(() => setSkillEffects(['vignette', 'charge']), 150)
-        setTimeout(() => setSkillEffects(['vignette', 'dash']), 450)
-        setTimeout(() => setSkillEffects(['crossSlash']), 750)
-        setTimeout(() => {
-          setShowFlash(true)
-          setSkillEffects([])
-        }, 950)
-        setTimeout(() => setShowFlash(false), 1150)
-        setScreenEffect('shakeMedium')
-        setTimeout(() => setScreenEffect(null), 400)
-      } else if (type === 'risingDragon') {
-        setAnimPhase('risingDragon')
-        // 升龙斩分步特效
-        setSkillEffects(['vignette'])
-        setScreenEffect('shakeLight')
-        setTimeout(() => setScreenEffect(null), 200)
-        setTimeout(() => setSkillEffects(['vignette', 'charge']), 200)
-        setTimeout(() => setSkillEffects(['launch']), 500)
-        setTimeout(() => {
-          setSkillEffects(['fireRain'])
-          setScreenEffect('shakeVertical')
-        }, 850)
-        setTimeout(() => setScreenEffect(null), 400)
-        setTimeout(() => {
-          setShowFlash(true)
-          setSkillEffects([])
-        }, 1150)
-        setTimeout(() => setShowFlash(false), 1350)
+      // Sound effects based on attack type
+      if (type === 'normal') {
+        playSound('hit_normal')
+      } else if (type === 'shadowStrike') {
+        playSound('hit_skill')
       } else {
-        setAnimPhase('playerAttack')
-        setScreenEffect('shakeLight')
-        setTimeout(() => setScreenEffect(null), 300)
+        playSound('hit_skill')
       }
 
-      setTimeout(() => {
+      // GSAP-driven animation timeline
+      const tl = gsap.timeline()
+
+      // --- Phase 1: Player attack animation ---
+      if (type === 'shadowStrike') {
+        setAnimPhase('shadowStrike')
+        // 暗影突刺分步特效 — GSAP timeline replaces nested setTimeout
+        tl.call(() => setSkillEffects(['vignette']))
+        tl.to({}, { duration: 0.15 })
+        tl.call(() => setSkillEffects(['vignette', 'charge']))
+        tl.to({}, { duration: 0.3 })
+        tl.call(() => setSkillEffects(['vignette', 'dash']))
+        tl.to({}, { duration: 0.3 })
+        tl.call(() => {
+          setSkillEffects(['crossSlash'])
+          shakeScreen(battleStageRef.current, 'medium')
+        })
+        tl.to({}, { duration: 0.2 })
+        tl.call(() => {
+          setShowFlash(true)
+          setSkillEffects([])
+        })
+        tl.to({}, { duration: 0.2 })
+        tl.call(() => setShowFlash(false))
+      } else if (type === 'risingDragon') {
+        setAnimPhase('risingDragon')
+        tl.call(() => {
+          setSkillEffects(['vignette'])
+          shakeScreen(battleStageRef.current, 'light')
+        })
+        tl.to({}, { duration: 0.2 })
+        tl.call(() => setSkillEffects(['vignette', 'charge']))
+        tl.to({}, { duration: 0.3 })
+        tl.call(() => setSkillEffects(['launch']))
+        tl.to({}, { duration: 0.35 })
+        tl.call(() => {
+          setSkillEffects(['fireRain'])
+          shakeScreen(battleStageRef.current, 'heavy')
+        })
+        tl.to({}, { duration: 0.3 })
+        tl.call(() => {
+          setShowFlash(true)
+          setSkillEffects([])
+        })
+        tl.to({}, { duration: 0.2 })
+        tl.call(() => setShowFlash(false))
+      } else {
+        // Normal attack
+        setAnimPhase('playerAttack')
+        tl.call(() => shakeScreen(battleStageRef.current, 'light'))
+        tl.to({}, { duration: 0.3 })
+      }
+
+      // --- Phase 2: Floating damage number + Boss hit ---
+      tl.call(() => {
+        // 浮动伤害数字
+        setFloatingDmg({
+          value: atkResult.damage,
+          color: type === 'normal' ? '#FFD700' : type === 'shadowStrike' ? '#A855F7' : '#EF4444',
+          x: 65,
+          y: 30,
+          isCritical: type !== 'normal',
+        })
+      }, [], '-=0.1')
+      tl.to({}, { duration: 0.2 })
+      tl.call(() => {
         setAnimPhase('bossHurt')
-        // 命中爆炸特效
+        // Canvas粒子命中爆炸特效
+        if (particlesReady) {
+          const hitColor =
+            type === 'shadowStrike' ? '#A855F7' : type === 'risingDragon' ? '#EF4444' : '#FFD700'
+          emitParticle('hitExplosion', {
+            x: battleStageRef.current ? battleStageRef.current.clientWidth * 0.75 : 300,
+            y: battleStageRef.current ? battleStageRef.current.clientHeight * 0.45 : 150,
+            overrides: {
+              colors: [
+                parseInt(hitColor.replace('#', ''), 16),
+                0xffd700,
+                0xffffff,
+                parseInt(projColor.replace('#', ''), 16),
+              ],
+            },
+          })
+        }
+        // Keep DOM hit explosion as fallback
         const hitColor =
           type === 'shadowStrike' ? '#A855F7' : type === 'risingDragon' ? '#EF4444' : '#FFD700'
         setHitExplosion({ side: 'boss', color: hitColor })
-        setTimeout(() => setHitExplosion(null), 800)
-      }, 500)
+      })
+      tl.to({}, { duration: 0.4 })
+      tl.call(() => setFloatingDmg(null))
+      tl.call(() => setHitExplosion(null))
 
-      // 连击/技能特效
-      setTimeout(() => {
+      // --- Phase 3: Combo display ---
+      tl.call(() => {
         if (type === 'normal' && comboCount + 1 >= 2) setShowCombo(true)
-        if (type === 'shadowStrike' || type === 'risingDragon') {
-          // skillEffects handles flash
-        }
-      }, 600)
+      }, [], '-=0.2')
 
+      // --- Phase 4: Boss defeat or recovery ---
       if (atkResult.bossDefeated) {
-        setTimeout(() => setAnimPhase('bossDefeat'), 1000)
-        setTimeout(() => {
-          // 白屏闪光
+        tl.call(() => setAnimPhase('bossDefeat'), [], '+=0.2')
+
+        // Screen flash
+        tl.call(() => {
           setShowScreenFlash(true)
-          setTimeout(() => setShowScreenFlash(false), 250)
-        }, 1050)
-        setTimeout(() => {
+        }, [], '+=0.1')
+        tl.to({}, { duration: 0.25 })
+        tl.call(() => setShowScreenFlash(false))
+
+        // Defeat burst — Canvas particles replace DOM particles
+        tl.call(() => {
           setShowDefeatBurst(true)
           setDefeatedBossName(boss.name)
-          setScreenEffect('shakeHeavy')
-          setTimeout(() => setScreenEffect(null), 500)
-        }, 1300)
-        setTimeout(() => {
+          shakeScreen(battleStageRef.current, 'heavy')
+          playSound('boss_defeat')
+          // Epic Canvas particle burst
+          if (particlesReady) {
+            const bossColor = parseInt(boss.color.replace('#', ''), 16)
+            const bossGlow = parseInt(boss.glowColor.replace('#', ''), 16)
+            emitParticle('defeatMegaBurst', {
+              x: battleStageRef.current ? battleStageRef.current.clientWidth * 0.75 : 300,
+              y: battleStageRef.current ? battleStageRef.current.clientHeight * 0.45 : 150,
+              overrides: {
+                colors: [bossColor, bossGlow, 0xffd700, 0xff8c42, 0xff4757, 0xffffff, 0xff6348, 0xffa502],
+              },
+            })
+          }
+        }, [], '+=0.2')
+        tl.to({}, { duration: 0.5 })
+
+        // Recovery and transition
+        tl.call(() => {
           setShowDefeatBurst(false)
           setAnimPhase('idle')
           setAnswerState('input')
           setInputValue('')
           setSkillEffects([])
+          clearParticles()
           if (atkResult.allBossesCleared) {
             if (user)
               finishGame(user.id).then((res) => {
@@ -395,15 +487,16 @@ export default function MathBossPage() {
             advanceToNextBoss()
             fetchNextQuestion()
           }
-        }, 2200)
+        }, [], '+=0.5')
       } else {
-        setTimeout(() => {
+        // Boss not defeated — recovery
+        tl.call(() => {
           setAnimPhase('idle')
           setAnswerState('input')
           setInputValue('')
           setSkillEffects([])
           fetchNextQuestion()
-        }, 1100)
+        }, [], '+=0.5')
       }
     },
     [
@@ -415,6 +508,10 @@ export default function MathBossPage() {
       advanceToNextBoss,
       fetchNextQuestion,
       finishGame,
+      playSound,
+      emitParticle,
+      clearParticles,
+      particlesReady,
     ],
   )
 
@@ -678,7 +775,9 @@ export default function MathBossPage() {
         </div>
 
         {/* 战斗舞台 */}
-        <div className={`${styles.battleStage} ${screenEffect ? styles[screenEffect] : ''}`}>
+        <div ref={battleStageRef} className={styles.battleStage}>
+          {/* Canvas粒子覆盖层 */}
+          <div ref={particleContainerRef} className={styles.particleOverlay} />
           {/* 氛围粒子 — 使用Boss主题色 */}
           {[
             {
@@ -1367,14 +1466,14 @@ export default function MathBossPage() {
         {(answerState === 'input' || isChoosing) && (
           <div className={styles.numpad}>
             {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((n) => (
-              <button key={n} className={styles.numpadBtn} onClick={() => handleNumClick(n)}>
+              <button key={n} className={styles.numpadBtn} onClick={() => { playSound('num_press'); handleNumClick(n) }}>
                 {n}
               </button>
             ))}
-            <button className={`${styles.numpadBtn} ${styles.delete}`} onClick={handleDelete}>
+            <button className={`${styles.numpadBtn} ${styles.delete}`} onClick={() => { playSound('num_press'); handleDelete() }}>
               ⌫
             </button>
-            <button className={styles.numpadBtn} onClick={() => handleNumClick(0)}>
+            <button className={styles.numpadBtn} onClick={() => { playSound('num_press'); handleNumClick(0) }}>
               0
             </button>
             <button

@@ -1,6 +1,8 @@
-import { useEffect, useCallback, useState } from 'react'
+import { useEffect, useCallback, useRef } from 'react'
 import { createPortal } from 'react-dom'
 import styles from '../styles/Lottery.module.css'
+import { ParticleSystem } from '../engine/ParticleSystem'
+import { useSoundContext } from '../contexts/SoundContext'
 
 interface LotteryResultProps {
   visible: boolean
@@ -13,31 +15,6 @@ interface LotteryResultProps {
   onContinue: () => void
 }
 
-interface Confetti {
-  id: number
-  left: number
-  color: string
-  delay: number
-  duration: number
-  shape: 'square' | 'circle'
-}
-
-const CONFETTI_COLORS = ['#FF8C42', '#FFA559', '#D4A853', '#FF6B9D', '#4ADE80', '#FBBF24']
-const GRAND_CONFETTI_COLORS = ['#FFD700', '#FFA500', '#FF8C00', '#FFE4B5', '#F0E68C']
-
-function generateConfetti(grand = false): Confetti[] {
-  const colors = grand ? GRAND_CONFETTI_COLORS : CONFETTI_COLORS
-  const count = grand ? 80 : 50
-  return Array.from({ length: count }, (_, i) => ({
-    id: i,
-    left: Math.random() * 100,
-    color: colors[Math.floor(Math.random() * colors.length)],
-    delay: Math.random() * 0.5,
-    duration: 2 + Math.random() * 2,
-    shape: Math.random() > 0.5 ? 'square' : 'circle',
-  }))
-}
-
 export default function LotteryResult({
   visible,
   amount,
@@ -48,18 +25,66 @@ export default function LotteryResult({
   onClose,
   onContinue,
 }: LotteryResultProps) {
-  const [confetti, setConfetti] = useState<Confetti[]>([])
-
   const isGrand = tier === 'grand'
+  const { play: playSound } = useSoundContext()
+  const particleContainerRef = useRef<HTMLDivElement>(null)
+  const particleSystemRef = useRef<ParticleSystem | null>(null)
 
+  // Initialize and manage Canvas confetti
   useEffect(() => {
-    if (visible) {
-      setConfetti(generateConfetti(isGrand))
-      // 清理彩纸
-      const timer = setTimeout(() => setConfetti([]), 4000)
-      return () => clearTimeout(timer)
+    if (!visible) return
+
+    const container = particleContainerRef.current
+    if (!container) return
+
+    const system = new ParticleSystem()
+    particleSystemRef.current = system
+
+    system
+      .init(container, {
+        width: window.innerWidth,
+        height: window.innerHeight,
+      })
+      .then(() => {
+        // Confetti rain from top
+        system.emit('confettiRain', {
+          x: window.innerWidth / 2,
+          y: -20,
+          countMultiplier: isGrand ? 2 : 1,
+        })
+
+        // Confetti cannons from bottom corners
+        system.emit('confettiCannon', {
+          x: window.innerWidth * 0.1,
+          y: window.innerHeight * 0.9,
+        })
+        system.emit('confettiCannon', {
+          x: window.innerWidth * 0.9,
+          y: window.innerHeight * 0.9,
+        })
+
+        // Grand prize: extra golden sparkle burst from center
+        if (isGrand) {
+          setTimeout(() => {
+            system.emit('celebrationBurst', {
+              x: window.innerWidth / 2,
+              y: window.innerHeight / 2,
+              countMultiplier: 2,
+            })
+          }, 300)
+        }
+
+        playSound('confetti')
+      })
+      .catch((err) => {
+        console.warn('Confetti particle system init failed:', err)
+      })
+
+    return () => {
+      system.destroy()
+      particleSystemRef.current = null
     }
-  }, [visible, isGrand])
+  }, [visible, isGrand, playSound])
 
   const handleContinue = useCallback(() => {
     onContinue()
@@ -70,22 +95,19 @@ export default function LotteryResult({
 
   const modalContent = (
     <>
-      {/* 彩纸效果 */}
-      <div className={styles.confettiContainer}>
-        {confetti.map((c) => (
-          <div
-            key={c.id}
-            className={styles.confetti}
-            style={{
-              left: `${c.left}%`,
-              backgroundColor: c.color,
-              borderRadius: c.shape === 'circle' ? '50%' : '2px',
-              animationDelay: `${c.delay}s`,
-              animationDuration: `${c.duration}s`,
-            }}
-          />
-        ))}
-      </div>
+      {/* Canvas confetti overlay */}
+      <div
+        ref={particleContainerRef}
+        style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          width: '100%',
+          height: '100%',
+          pointerEvents: 'none',
+          zIndex: 9998,
+        }}
+      />
 
       {/* 弹窗 */}
       <div className={styles.resultOverlay} onClick={onClose}>

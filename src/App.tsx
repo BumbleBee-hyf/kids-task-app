@@ -5,6 +5,7 @@ import { LotteryProvider } from './contexts/LotteryContext'
 import { MathBossProvider } from './contexts/MathBossContext'
 import { PointsProvider } from './contexts/PointsContext'
 import { VoucherProvider } from './contexts/VoucherContext'
+import { SoundProvider } from './contexts/SoundContext'
 import ProtectedRoute from './components/ProtectedRoute'
 import LoginPage from './pages/LoginPage'
 import RegisterPage from './pages/RegisterPage'
@@ -30,7 +31,8 @@ export default function App() {
             <PointsProvider>
               <MathBossProvider>
                 <VoucherProvider>
-                  <Routes>
+                  <SoundProvider>
+                    <Routes>
                     <Route path="/login" element={<LoginPage />} />
                     <Route path="/register" element={<RegisterPage />} />
                     <Route path="/login-redirect" element={<LoginRedirect />} />
@@ -67,7 +69,8 @@ export default function App() {
                     </Route>
 
                     <Route path="*" element={<Navigate to="/login" replace />} />
-                  </Routes>
+                    </Routes>
+                  </SoundProvider>
                 </VoucherProvider>
               </MathBossProvider>
             </PointsProvider>

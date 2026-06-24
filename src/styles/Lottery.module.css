@@ -253,6 +253,18 @@
   gap: 18px;
   flex-wrap: wrap;
   max-width: 700px;
+  position: relative;
+}
+
+/* Canvas粒子覆盖层 — 用于抽奖粒子特效 */
+.particleOverlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 15;
 }
 
 .boxItem {
@@ -639,6 +651,11 @@
   animation: lightBlink 0.6s ease-in-out infinite alternate;
 }
 
+/* LED灯追逐动画 — 旋转时追逐流动 */
+.wheelLight.chase {
+  animation: lightChase 0.3s ease-in-out infinite alternate;
+}
+
 .wheelLight:nth-child(odd) {
   background: #ffd700;
   color: #ffd700;
@@ -658,6 +675,22 @@
   100% {
     opacity: 1;
     transform: scale(1.2);
+  }
+}
+
+@keyframes lightChase {
+  0% {
+    opacity: 0.2;
+    transform: scale(0.6);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.3);
+    box-shadow: 0 0 16px currentColor;
+  }
+  100% {
+    opacity: 0.4;
+    transform: scale(0.8);
   }
 }
 

@@ -1,7 +1,9 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useAuth } from '../../contexts/AuthContext'
 import { useVouchers } from '../../contexts/VoucherContext'
 import { usePoints } from '../../contexts/PointsContext'
+import { useSoundContext } from '../../contexts/SoundContext'
+import { countUp } from '../../engine/BattleTimelines'
 import WithdrawForm from '../../components/WithdrawForm'
 import '../../styles/Voucher.module.css'
 
@@ -14,11 +16,14 @@ export default function VoucherPage() {
     refreshBalance,
     refreshRecords,
   } = usePoints()
+  const { play: playSound } = useSoundContext()
   const [showWithdrawForm, setShowWithdrawForm] = useState(false)
   const [balance, setBalance] = useState(0)
-  const [vouchers, setVouchers] = useState<any[]>([])
-  const [withdraws, setWithdraws] = useState<any[]>([])
+  const [vouchers, setVouchers] = useState<unknown[]>([])
+  const [withdraws, setWithdraws] = useState<unknown[]>([])
   const [activeTab, setActiveTab] = useState<'voucher' | 'points'>('voucher')
+  const pointsBalanceRef = useRef<HTMLDivElement>(null)
+  const voucherBalanceRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     const load = async () => {
@@ -40,6 +45,15 @@ export default function VoucherPage() {
     refreshBalance,
     refreshRecords,
   ])
+
+  // Count-up animation on data load
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      countUp(pointsBalanceRef.current, pointBalance, 0.8)
+      countUp(voucherBalanceRef.current, balance, 0.8)
+    }, 300)
+    return () => clearTimeout(timer)
+  }, [pointBalance, balance])
 
   // Tab切换时刷新数据
   useEffect(() => {
@@ -66,6 +80,7 @@ export default function VoucherPage() {
       setBalance(await getBalance(user.id))
       setWithdraws(await getWithdrawsByStudent(user.id))
       setVouchers(await getVouchersByStudent(user.id))
+      playSound('points_gain')
     }
     return result
   }
@@ -88,6 +103,11 @@ export default function VoucherPage() {
     admin_grant: '管理员发放',
   }
 
+  const handleTabChange = (tab: 'voucher' | 'points') => {
+    setActiveTab(tab)
+    playSound('click')
+  }
+
   return (
     <div className="page-container">
       <div className="section-header">
@@ -105,16 +125,16 @@ export default function VoucherPage() {
         )}
       </div>
 
-      {/* 积分与代金券余额 */}
+      {/* 积分与代金券余额 — count-up动画 */}
       <div className="grid-2" style={{ marginBottom: 'var(--spacing-md)' }}>
         <div className="card balance-card" style={{ textAlign: 'center' }}>
           <div className="balance-emoji">⭐</div>
-          <div className="balance-amount">{pointBalance}</div>
+          <div ref={pointsBalanceRef} className="balance-amount">0</div>
           <div className="balance-label">积分余额</div>
         </div>
         <div className="card balance-card" style={{ textAlign: 'center' }}>
           <div className="balance-emoji">💰</div>
-          <div className="balance-amount">{balance}</div>
+          <div ref={voucherBalanceRef} className="balance-amount">0</div>
           <div className="balance-label">代金券余额（元）</div>
         </div>
       </div>
@@ -138,19 +158,19 @@ export default function VoucherPage() {
       >
         <button
           className={`btn ${activeTab === 'voucher' ? 'btn-primary' : 'btn-outline'} btn-sm`}
-          onClick={() => setActiveTab('voucher')}
+          onClick={() => handleTabChange('voucher')}
         >
           代金券明细
         </button>
         <button
           className={`btn ${activeTab === 'points' ? 'btn-primary' : 'btn-outline'} btn-sm`}
-          onClick={() => setActiveTab('points')}
+          onClick={() => handleTabChange('points')}
         >
           积分明细
         </button>
       </div>
 
-      {/* 代金券明细 */}
+      {/* 代金券明细 — 交错淡入 */}
       {activeTab === 'voucher' &&
         (vouchers.length === 0 ? (
           <div className="empty-state" style={{ padding: 'var(--spacing-lg)' }}>
@@ -168,8 +188,13 @@ export default function VoucherPage() {
                 </tr>
               </thead>
               <tbody>
-                {vouchers.map((v: any) => (
-                  <tr key={v.id}>
+                {vouchers.map((v: any, i: number) => (
+                  <tr
+                    key={v.id}
+                    style={{
+                      animation: `fadeInUp 0.3s ease ${i * 0.05}s both`,
+                    }}
+                  >
                     <td>{sourceLabel[v.source] || v.source}</td>
                     <td>
                       <strong className="points">{v.amount} 元</strong>
@@ -182,7 +207,7 @@ export default function VoucherPage() {
           </div>
         ))}
 
-      {/* 积分明细 */}
+      {/* 积分明细 — 交错淡入 */}
       {activeTab === 'points' &&
         (pointRecords.length === 0 ? (
           <div className="empty-state" style={{ padding: 'var(--spacing-lg)' }}>
@@ -201,8 +226,13 @@ export default function VoucherPage() {
                 </tr>
               </thead>
               <tbody>
-                {pointRecords.map((p: any) => (
-                  <tr key={p.id}>
+                {pointRecords.map((p: any, i: number) => (
+                  <tr
+                    key={p.id}
+                    style={{
+                      animation: `fadeInUp 0.3s ease ${i * 0.05}s both`,
+                    }}
+                  >
                     <td>{pointSourceLabel[p.source] || p.source}</td>
                     <td>
                       <strong

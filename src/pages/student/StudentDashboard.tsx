@@ -1,8 +1,12 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
+import gsap from 'gsap'
 import { useAuth } from '../../contexts/AuthContext'
 import { useTasks } from '../../contexts/TaskContext'
 import { usePoints } from '../../contexts/PointsContext'
+import { useSoundContext } from '../../contexts/SoundContext'
+import { useParticleCanvas } from '../../hooks/useParticleCanvas'
+import { countUp } from '../../engine/BattleTimelines'
 import { voucherStorage, checkinStorage } from '../../services/storageService'
 
 export default function StudentDashboard() {
@@ -10,6 +14,14 @@ export default function StudentDashboard() {
   const { getTasksByStudent, refreshTasks } = useTasks()
   const { balance: pointBalance, refreshBalance } = usePoints()
   const navigate = useNavigate()
+  const { play: playSound } = useSoundContext()
+  const { containerRef: particleRef, emit: emitParticle, ready: particlesReady } = useParticleCanvas()
+  const pageRef = useRef<HTMLDivElement>(null)
+  const pendingRef = useRef<HTMLDivElement>(null)
+  const pointsRef = useRef<HTMLDivElement>(null)
+  const voucherRef = useRef<HTMLDivElement>(null)
+  const checkinDaysRef = useRef<HTMLDivElement>(null)
+
   const [voucherBalance, setVoucherBalance] = useState(0)
   const [checkinStatus, setCheckinStatus] = useState<{
     checkedInToday: boolean
@@ -44,9 +56,24 @@ export default function StudentDashboard() {
     return () => window.removeEventListener('focus', onFocus)
   }, [user?.id])
 
+  // Count-up animation on mount
+  useEffect(() => {
+    if (!user) return
+    const myTasks = getTasksByStudent(user.id)
+    const pending = myTasks.filter((t) => t.status === 'pending').length
+
+    // Delayed count-up for stats
+    const timer = setTimeout(() => {
+      countUp(pendingRef.current, pending, 0.6)
+      countUp(pointsRef.current, pointBalance, 0.8)
+      countUp(voucherRef.current, voucherBalance, 0.8)
+    }, 300)
+
+    return () => clearTimeout(timer)
+  }, [user?.id, pointBalance, voucherBalance])
+
   if (!user) return null
   const myTasks = getTasksByStudent(user.id)
-  const pendingCount = myTasks.filter((t) => t.status === 'pending').length
   const submittedCount = myTasks.filter((t) => t.status === 'submitted').length
   const approvedCount = myTasks.filter((t) => t.status === 'approved').length
   const todayApproved = myTasks.filter((t) => {
@@ -69,9 +96,31 @@ export default function StudentDashboard() {
           checkedInToday: true,
           streak: result.streak,
         }))
+        // Celebration effects
+        playSound('checkin')
+        playSound('points_gain')
+
+        // Bounce animation on checkin streak
+        if (checkinDaysRef.current) {
+          gsap.fromTo(
+            checkinDaysRef.current,
+            { scale: 1 },
+            { scale: 1.4, duration: 0.2, yoyo: true, repeat: 1, ease: 'power2.out' },
+          )
+        }
+
+        // Star burst particle from checkin button
+        if (particlesReady) {
+          emitParticle('starBurst', {
+            x: pageRef.current ? pageRef.current.clientWidth * 0.85 : 300,
+            y: 100,
+            countMultiplier: 1.5,
+          })
+        }
       }
-    } catch (err: any) {
-      alert(err.message || '签到失败')
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : '签到失败'
+      alert(msg)
     } finally {
       setCheckinLoading(false)
     }
@@ -89,7 +138,10 @@ export default function StudentDashboard() {
         : `🎁 签到领${checkinStatus.checkinPoints}积分`
 
   return (
-    <div className="page-container">
+    <div ref={pageRef} className="page-container" style={{ position: 'relative' }}>
+      {/* Canvas粒子覆盖层 */}
+      <div ref={particleRef} className="dashboard-particle-overlay" />
+
       {/* 欢迎卡片 */}
       <div className="welcome-card">
         <div className="welcome-left">
@@ -103,7 +155,7 @@ export default function StudentDashboard() {
           <div className="checkin-icon">📅</div>
           <div className="checkin-text">
             <div className="checkin-label">连续签到</div>
-            <div className="checkin-days">
+            <div ref={checkinDaysRef} className="checkin-days">
               {checkinStatus.streak}
               <span> 天</span>
             </div>
@@ -136,8 +188,8 @@ export default function StudentDashboard() {
           onClick={() => navigate('/student/tasks')}
         >
           <div className="stat-card-icon">📌</div>
-          <div className="stat-card-value" style={{ color: 'var(--color-warning)' }}>
-            {pendingCount}
+          <div ref={pendingRef} className="stat-card-value" style={{ color: 'var(--color-warning)' }}>
+            0
           </div>
           <div className="stat-card-label">待完成任务</div>
         </div>
@@ -146,8 +198,8 @@ export default function StudentDashboard() {
           onClick={() => navigate('/student/lottery')}
         >
           <div className="stat-card-icon">⭐</div>
-          <div className="stat-card-value" style={{ color: 'var(--color-primary)' }}>
-            {pointBalance}
+          <div ref={pointsRef} className="stat-card-value" style={{ color: 'var(--color-primary)' }}>
+            0
           </div>
           <div className="stat-card-label">我的积分</div>
         </div>
@@ -156,8 +208,8 @@ export default function StudentDashboard() {
           onClick={() => navigate('/student/voucher')}
         >
           <div className="stat-card-icon">💰</div>
-          <div className="stat-card-value" style={{ color: 'var(--color-secondary)' }}>
-            {voucherBalance}
+          <div ref={voucherRef} className="stat-card-value" style={{ color: 'var(--color-secondary)' }}>
+            0
           </div>
           <div className="stat-card-label">代金券余额</div>
         </div>

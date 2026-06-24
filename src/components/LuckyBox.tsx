@@ -1,6 +1,9 @@
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useRef } from 'react'
+import gsap from 'gsap'
 import styles from '../styles/Lottery.module.css'
 import LotteryResult from './LotteryResult'
+import { useSoundContext } from '../contexts/SoundContext'
+import { useParticleCanvas } from '../hooks/useParticleCanvas'
 
 interface Prize {
   id: string
@@ -59,6 +62,10 @@ export default function LuckyBox({ prizes = DEFAULT_PRIZES, onWin, disabled }: L
   // 是否显示结果弹窗
   const [showResult, setShowResult] = useState(false)
 
+  const { play: playSound } = useSoundContext()
+  const { containerRef: particleRef, emit: emitParticle, ready: particlesReady } = useParticleCanvas()
+  const boxGridRef = useRef<HTMLDivElement>(null)
+
   // 点击宝箱
   const handleBoxClick = useCallback(
     (index: number) => {
@@ -71,14 +78,56 @@ export default function LuckyBox({ prizes = DEFAULT_PRIZES, onWin, disabled }: L
       }
       setOpeningIndex(index)
       setWinResult(selectedPrize)
+      playSound('box_open')
 
-      // 动画结束后显示结果
-      setTimeout(() => {
+      // GSAP timeline: lid opens with bounce → particles burst → prize appears → sparkle
+      const tl = gsap.timeline()
+
+      // After box opening animation (CSS handles the lid), burst particles
+      tl.call(() => {
+        if (particlesReady && boxGridRef.current) {
+          const boxItems = boxGridRef.current.children
+          const targetBox = boxItems[index] as HTMLElement
+          if (targetBox) {
+            const rect = targetBox.getBoundingClientRect()
+            const gridRect = boxGridRef.current.getBoundingClientRect()
+            const cx = rect.left - gridRect.left + rect.width / 2
+            const cy = rect.top - gridRect.top + rect.height / 2
+
+            emitParticle('boxBurst', {
+              x: cx,
+              y: cy,
+              countMultiplier: selectedPrize.amount >= 10 ? 2 : 1,
+            })
+          }
+        }
+      }, [], '+=0.3')
+
+      // Grand prize: second burst
+      if (selectedPrize.amount >= 10) {
+        tl.call(() => {
+          if (particlesReady && boxGridRef.current) {
+            const boxItems = boxGridRef.current.children
+            const targetBox = boxItems[index] as HTMLElement
+            if (targetBox) {
+              const rect = targetBox.getBoundingClientRect()
+              const gridRect = boxGridRef.current.getBoundingClientRect()
+              const cx = rect.left - gridRect.left + rect.width / 2
+              const cy = rect.top - gridRect.top + rect.height / 2
+              emitParticle('sparkleTrail', { x: cx, y: cy, countMultiplier: 3 })
+            }
+          }
+        }, [], '+=0.2')
+      }
+
+      // Show result after animation completes
+      tl.call(() => {
         onWin(selectedPrize)
         setShowResult(true)
-      }, 800)
+        playSound('confetti')
+      }, [], '+=0.4')
     },
-    [disabled, openingIndex, boxes, onWin],
+    [disabled, openingIndex, boxes, onWin, playSound, emitParticle, particlesReady],
   )
 
   // 关闭结果弹窗
@@ -104,14 +153,9 @@ export default function LuckyBox({ prizes = DEFAULT_PRIZES, onWin, disabled }: L
       )}
 
       <div className={styles.boxGameMain}>
-        {/* Idle Badge */}
-        {/* <div className={styles.idleBadge}>
-          <span className={styles.idleBadgeDot} />
-          idle
-        </div> */}
-
-        {/* 宝箱列表 */}
-        <div className={styles.boxGrid}>
+        {/* 宝箱列表 + Canvas粒子覆盖层 */}
+        <div ref={boxGridRef} className={styles.boxGrid} style={{ position: 'relative' }}>
+          <div ref={particleRef} className={styles.particleOverlay} />
           {boxes.map((prize, index) => {
             const isOpening = openingIndex === index
             const isOpened = openingIndex !== null && openingIndex !== index
