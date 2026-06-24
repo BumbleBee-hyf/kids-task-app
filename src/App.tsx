@@ -1,25 +1,25 @@
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
-import { AuthProvider } from './contexts/AuthContext';
-import { TaskProvider } from './contexts/TaskContext';
-import { LotteryProvider } from './contexts/LotteryContext';
-import { MathBossProvider } from './contexts/MathBossContext';
-import { PointsProvider } from './contexts/PointsContext';
-import { VoucherProvider } from './contexts/VoucherContext';
-import ProtectedRoute from './components/ProtectedRoute';
-import LoginPage from './pages/LoginPage';
-import RegisterPage from './pages/RegisterPage';
-import LoginRedirect from './pages/LoginRedirect';
-import StudentLayout from './pages/student/StudentLayout';
-import StudentDashboard from './pages/student/StudentDashboard';
-import StudentTaskPage from './pages/student/StudentTaskPage';
-import LotteryPage from './pages/student/LotteryPage';
-import MathBossPage from './pages/student/MathBossPage';
-import VoucherPage from './pages/student/VoucherPage';
-import ParentLayout from './pages/parent/ParentLayout';
-import ParentDashboard from './pages/parent/ParentDashboard';
-import TaskManagementPage from './pages/parent/TaskManagementPage';
-import ApprovalPage from './pages/parent/ApprovalPage';
-import LotteryConfigPage from './pages/parent/LotteryConfigPage';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
+import { AuthProvider } from './contexts/AuthContext'
+import { TaskProvider } from './contexts/TaskContext'
+import { LotteryProvider } from './contexts/LotteryContext'
+import { MathBossProvider } from './contexts/MathBossContext'
+import { PointsProvider } from './contexts/PointsContext'
+import { VoucherProvider } from './contexts/VoucherContext'
+import ProtectedRoute from './components/ProtectedRoute'
+import LoginPage from './pages/LoginPage'
+import RegisterPage from './pages/RegisterPage'
+import LoginRedirect from './pages/LoginRedirect'
+import StudentLayout from './pages/student/StudentLayout'
+import StudentDashboard from './pages/student/StudentDashboard'
+import StudentTaskPage from './pages/student/StudentTaskPage'
+import LotteryPage from './pages/student/LotteryPage'
+import MathBossPage from './pages/student/MathBossPage'
+import VoucherPage from './pages/student/VoucherPage'
+import ParentLayout from './pages/parent/ParentLayout'
+import ParentDashboard from './pages/parent/ParentDashboard'
+import TaskManagementPage from './pages/parent/TaskManagementPage'
+import ApprovalPage from './pages/parent/ApprovalPage'
+import LotteryConfigPage from './pages/parent/LotteryConfigPage'
 
 export default function App() {
   return (
@@ -75,5 +75,5 @@ export default function App() {
         </TaskProvider>
       </AuthProvider>
     </BrowserRouter>
-  );
+  )
 }

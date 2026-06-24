@@ -1,24 +1,24 @@
-import { useState } from 'react';
-import { Outlet, NavLink, useNavigate } from 'react-router-dom';
-import { useAuth } from '../../contexts/AuthContext';
+import { useState } from 'react'
+import { Outlet, NavLink, useNavigate } from 'react-router-dom'
+import { useAuth } from '../../contexts/AuthContext'
 
 export default function ParentLayout() {
-  const { user, logout } = useAuth();
-  const navigate = useNavigate();
-  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const { user, logout } = useAuth()
+  const navigate = useNavigate()
+  const [dropdownOpen, setDropdownOpen] = useState(false)
 
   const handleLogout = () => {
-    logout();
-    navigate('/login');
-    setDropdownOpen(false);
-  };
+    logout()
+    navigate('/login')
+    setDropdownOpen(false)
+  }
 
   const navItems = [
     { to: '/parent/dashboard', icon: '🏠', label: '首页' },
     { to: '/parent/tasks', icon: '📝', label: '任务管理' },
     { to: '/parent/approvals', icon: '✅', label: '审批中心' },
     { to: '/parent/lottery-config', icon: '🎰', label: '抽奖配置' },
-  ];
+  ]
 
   return (
     <div className="layout">
@@ -33,7 +33,7 @@ export default function ParentLayout() {
           </div>
 
           <div className="navbar-nav">
-            {navItems.map(item => (
+            {navItems.map((item) => (
               <NavLink
                 key={item.to}
                 to={item.to}
@@ -71,5 +71,5 @@ export default function ParentLayout() {
         <Outlet />
       </main>
     </div>
-  );
+  )
 }
