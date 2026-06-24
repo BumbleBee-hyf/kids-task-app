@@ -1,25 +1,25 @@
-import { useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../../contexts/AuthContext';
-import { useTasks } from '../../contexts/TaskContext';
+import { useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
+import { useAuth } from '../../contexts/AuthContext'
+import { useTasks } from '../../contexts/TaskContext'
 
 export default function ParentDashboard() {
-  const { user } = useAuth();
-  const { tasks, refreshTasks } = useTasks();
-  const navigate = useNavigate();
+  const { user } = useAuth()
+  const { tasks, refreshTasks } = useTasks()
+  const navigate = useNavigate()
 
   useEffect(() => {
-    refreshTasks();
-  }, [refreshTasks]);
+    refreshTasks()
+  }, [refreshTasks])
 
-  const totalTasks = tasks.filter(t => t.parentId === user?.id).length;
-  const pendingApprovals = tasks.filter(t => t.status === 'submitted').length;
-  const approvedToday = tasks.filter(t => {
-    if (t.status !== 'approved' || !t.approvedAt) return false;
-    const d = new Date();
-    const today = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
-    return t.approvedAt.startsWith(today);
-  }).length;
+  const totalTasks = tasks.filter((t) => t.parentId === user?.id).length
+  const pendingApprovals = tasks.filter((t) => t.status === 'submitted').length
+  const approvedToday = tasks.filter((t) => {
+    if (t.status !== 'approved' || !t.approvedAt) return false
+    const d = new Date()
+    const today = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
+    return t.approvedAt.startsWith(today)
+  }).length
 
   return (
     <div className="page-container">
@@ -46,17 +46,26 @@ export default function ParentDashboard() {
       <div className="grid-3" style={{ marginBottom: 'var(--spacing-lg)' }}>
         <div className="card card-blue stat-card-arrow" onClick={() => navigate('/parent/tasks')}>
           <div className="stat-card-icon">📝</div>
-          <div className="stat-card-value" style={{ color: 'var(--text-primary)' }}>{totalTasks}</div>
+          <div className="stat-card-value" style={{ color: 'var(--text-primary)' }}>
+            {totalTasks}
+          </div>
           <div className="stat-card-label">已发布任务</div>
         </div>
-        <div className="card card-orange stat-card-arrow" onClick={() => navigate('/parent/approvals')}>
+        <div
+          className="card card-orange stat-card-arrow"
+          onClick={() => navigate('/parent/approvals')}
+        >
           <div className="stat-card-icon">⏳</div>
-          <div className="stat-card-value" style={{ color: 'var(--color-warning)' }}>{pendingApprovals}</div>
+          <div className="stat-card-value" style={{ color: 'var(--color-warning)' }}>
+            {pendingApprovals}
+          </div>
           <div className="stat-card-label">待审批</div>
         </div>
         <div className="card card-green stat-card-arrow">
           <div className="stat-card-icon">✅</div>
-          <div className="stat-card-value" style={{ color: 'var(--color-success)' }}>{approvedToday}</div>
+          <div className="stat-card-value" style={{ color: 'var(--color-success)' }}>
+            {approvedToday}
+          </div>
           <div className="stat-card-label">今日已审批</div>
         </div>
       </div>
@@ -95,5 +104,5 @@ export default function ParentDashboard() {
         </button>
       </div>
     </div>
-  );
+  )
 }

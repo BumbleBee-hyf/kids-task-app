@@ -1,20 +1,21 @@
-# UI  redesign  - 儿童任务积分乐园视觉升级方案
+# UI redesign - 儿童任务积分乐园视觉升级方案
 
 ## 1. 项目背景与现状分析
 
 当前 `kids-task-app` 是一个面向儿童的每日任务积分与奖励系统，使用 React + TypeScript + Vite 构建。现有 UI 存在以下核心问题：
 
-| 问题类别 | 具体表现 |
-|---|---|
-| **色彩沉闷** | 主色为冷紫色(#6366F1)，侧边栏深灰(#1E293B)，整体色调偏成人商务风，缺乏儿童产品应有的活泼感 |
-| **童趣元素不足** | 仅有 emoji 点缀，缺少圆角、柔和渐变、卡通化卡片等儿童友好设计 |
-| **代码维护性差** | 大量内联 `style={{...}}` 分散在各组件中，难以统一调整 |
-| **视觉层次弱** | 页面信息密度不均，重点不突出，卡片 hover 效果单一 |
-| **移动端粗糙** | 部分页面移动端适配不够精细，如转盘抽奖在窄屏下尺寸未做合理缩放 |
+| 问题类别         | 具体表现                                                                                   |
+| ---------------- | ------------------------------------------------------------------------------------------ |
+| **色彩沉闷**     | 主色为冷紫色(#6366F1)，侧边栏深灰(#1E293B)，整体色调偏成人商务风，缺乏儿童产品应有的活泼感 |
+| **童趣元素不足** | 仅有 emoji 点缀，缺少圆角、柔和渐变、卡通化卡片等儿童友好设计                              |
+| **代码维护性差** | 大量内联 `style={{...}}` 分散在各组件中，难以统一调整                                      |
+| **视觉层次弱**   | 页面信息密度不均，重点不突出，卡片 hover 效果单一                                          |
+| **移动端粗糙**   | 部分页面移动端适配不够精细，如转盘抽奖在窄屏下尺寸未做合理缩放                             |
 
 ## 2. 设计目标
 
 打造一套 **"温暖、活泼、可信赖"** 的儿童任务激励系统视觉风格：
+
 - **温暖**：使用暖黄、暖绿、天蓝为主色，传递积极向上的情绪
 - **活泼**：大圆角、柔和阴影、微动效，贴合儿童审美
 - **可信赖**：清晰的信息层级、统一的组件规范、良好的可用性
@@ -28,48 +29,48 @@
 ```css
 :root {
   /* === 主色板 - 活泼糖果色 === */
-  --color-primary: #FF8C42;        /* 活力橙 - 主按钮、强调 */
-  --color-primary-light: #FFB380;  /* 浅橙 - hover、轻强调 */
-  --color-primary-dark: #E66A20;   /* 深橙 - active */
+  --color-primary: #ff8c42; /* 活力橙 - 主按钮、强调 */
+  --color-primary-light: #ffb380; /* 浅橙 - hover、轻强调 */
+  --color-primary-dark: #e66a20; /* 深橙 - active */
 
-  --color-secondary: #4ADE80;      /* 嫩芽绿 - 成功、正向操作 */
-  --color-secondary-light: #86EFAC;/* 浅绿 */
-  --color-secondary-dark: #22C55E; /* 深绿 */
+  --color-secondary: #4ade80; /* 嫩芽绿 - 成功、正向操作 */
+  --color-secondary-light: #86efac; /* 浅绿 */
+  --color-secondary-dark: #22c55e; /* 深绿 */
 
-  --color-accent: #38BDF8;         /* 天空蓝 - 信息、辅助 */
-  --color-accent-light: #7DD3FC;   /* 浅蓝 */
-  --color-accent-dark: #0EA5E9;    /* 深蓝 */
+  --color-accent: #38bdf8; /* 天空蓝 - 信息、辅助 */
+  --color-accent-light: #7dd3fc; /* 浅蓝 */
+  --color-accent-dark: #0ea5e9; /* 深蓝 */
 
   /* 功能色 */
-  --color-success: #4ADE80;
-  --color-warning: #FBBF24;        /* 金黄 */
-  --color-error: #FB7185;          /* 柔和红 */
-  --color-info: #38BDF8;
+  --color-success: #4ade80;
+  --color-warning: #fbbf24; /* 金黄 */
+  --color-error: #fb7185; /* 柔和红 */
+  --color-info: #38bdf8;
 
   /* 背景色 - 更温暖的米白/奶油色 */
-  --bg-page: #FFF8F0;              /* 奶油白 */
-  --bg-card: #FFFFFF;
-  --bg-sidebar: #FFF0E0;           /* 暖色侧边栏背景 */
-  --bg-elevated: #FFF5EB;
-  --bg-warm: #FFECD2;              /* 暖色区块背景 */
+  --bg-page: #fff8f0; /* 奶油白 */
+  --bg-card: #ffffff;
+  --bg-sidebar: #fff0e0; /* 暖色侧边栏背景 */
+  --bg-elevated: #fff5eb;
+  --bg-warm: #ffecd2; /* 暖色区块背景 */
 
   /* 文字色 - 降低对比度，更柔和 */
-  --text-primary: #2D2A26;         /* 暖黑 */
-  --text-secondary: #6B6560;       /* 暖灰 */
-  --text-muted: #A8A29E;           /* 浅暖灰 */
-  --text-inverse: #FFFFFF;
+  --text-primary: #2d2a26; /* 暖黑 */
+  --text-secondary: #6b6560; /* 暖灰 */
+  --text-muted: #a8a29e; /* 浅暖灰 */
+  --text-inverse: #ffffff;
 
   /* 边框与装饰 */
-  --border-color: #FDE8D0;         /* 暖色边框 */
-  --border-radius-xl: 24px;        /* 卡片圆角 */
-  --border-radius-lg: 16px;        /* 大按钮/弹窗 */
-  --border-radius-md: 12px;        /* 普通按钮/输入框 */
-  --border-radius-sm: 8px;         /* 小标签 */
-  --border-radius-full: 9999px;    /* 圆形 */
+  --border-color: #fde8d0; /* 暖色边框 */
+  --border-radius-xl: 24px; /* 卡片圆角 */
+  --border-radius-lg: 16px; /* 大按钮/弹窗 */
+  --border-radius-md: 12px; /* 普通按钮/输入框 */
+  --border-radius-sm: 8px; /* 小标签 */
+  --border-radius-full: 9999px; /* 圆形 */
 
   /* 阴影 - 更柔和的弥散阴影 */
   --shadow-sm: 0 2px 6px rgba(255, 140, 66, 0.06);
-  --shadow-md: 0 4px 16px rgba(255, 140, 66, 0.10);
+  --shadow-md: 0 4px 16px rgba(255, 140, 66, 0.1);
   --shadow-lg: 0 8px 30px rgba(255, 140, 66, 0.14);
   --shadow-xl: 0 16px 48px rgba(255, 140, 66, 0.18);
   --shadow-colored: 0 6px 20px rgba(255, 140, 66, 0.25);
@@ -77,6 +78,7 @@
 ```
 
 **配色原则**：
+
 - 橙色代表"行动与奖励"，用于主按钮、积分显示
 - 绿色代表"成长与完成"，用于成功状态、任务完成
 - 蓝色代表"信息与帮助"，用于提示、辅助信息
@@ -85,18 +87,21 @@
 ### 3.2 字体系统
 
 ```css
---font-family: 'Nunito', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+--font-family:
+  'Nunito', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei',
+  sans-serif;
 
---font-size-xs: 0.75rem;    /* 12px - 辅助文字 */
---font-size-sm: 0.875rem;   /* 14px - 次要信息 */
---font-size-md: 1rem;       /* 16px - 正文 */
---font-size-lg: 1.25rem;    /* 20px - 小标题 */
---font-size-xl: 1.5rem;     /* 24px - 页面标题 */
---font-size-2xl: 2rem;      /* 32px - 大标题/数字 */
---font-size-3xl: 2.5rem;    /* 40px - 大数字/余额 */
+--font-size-xs: 0.75rem; /* 12px - 辅助文字 */
+--font-size-sm: 0.875rem; /* 14px - 次要信息 */
+--font-size-md: 1rem; /* 16px - 正文 */
+--font-size-lg: 1.25rem; /* 20px - 小标题 */
+--font-size-xl: 1.5rem; /* 24px - 页面标题 */
+--font-size-2xl: 2rem; /* 32px - 大标题/数字 */
+--font-size-3xl: 2.5rem; /* 40px - 大数字/余额 */
 ```
 
 **设计说明**：
+
 - 引入 Google Fonts 的 `Nunito`（圆角无衬线字体），更加儿童友好
 - 中文字体使用系统默认，保证加载速度
 - 大数字使用更粗的字重(800)，强调积分、余额等关键数据
@@ -215,18 +220,18 @@
 
 /* 彩色卡片变体 - 用于统计/强调 */
 .card-orange {
-  background: linear-gradient(135deg, #FFF5EB 0%, #FFEDD5 100%);
-  border-color: #FED7AA;
+  background: linear-gradient(135deg, #fff5eb 0%, #ffedd5 100%);
+  border-color: #fed7aa;
 }
 
 .card-green {
-  background: linear-gradient(135deg, #F0FDF4 0%, #DCFCE7 100%);
-  border-color: #BBF7D0;
+  background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+  border-color: #bbf7d0;
 }
 
 .card-blue {
-  background: linear-gradient(135deg, #F0F9FF 0%, #E0F2FE 100%);
-  border-color: #BAE6FD;
+  background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+  border-color: #bae6fd;
 }
 ```
 
@@ -280,10 +285,22 @@
   letter-spacing: 0.02em;
 }
 
-.status-pending { background: #FEF3C7; color: #B45309; }
-.status-submitted { background: #DBEAFE; color: #1D4ED8; }
-.status-approved { background: #DCFCE7; color: #15803D; }
-.status-rejected { background: #FEE2E2; color: #B91C1C; }
+.status-pending {
+  background: #fef3c7;
+  color: #b45309;
+}
+.status-submitted {
+  background: #dbeafe;
+  color: #1d4ed8;
+}
+.status-approved {
+  background: #dcfce7;
+  color: #15803d;
+}
+.status-rejected {
+  background: #fee2e2;
+  color: #b91c1c;
+}
 ```
 
 ### 4.5 Toast 提示
@@ -302,13 +319,21 @@
   align-items: center;
   gap: var(--spacing-sm);
   backdrop-filter: blur(12px);
-  border: 1px solid rgba(255,255,255,0.2);
+  border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
-.toast-success { background: rgba(74, 222, 128, 0.95); }
-.toast-error { background: rgba(251, 113, 133, 0.95); }
-.toast-warning { background: rgba(251, 191, 36, 0.95); }
-.toast-info { background: rgba(56, 189, 248, 0.95); }
+.toast-success {
+  background: rgba(74, 222, 128, 0.95);
+}
+.toast-error {
+  background: rgba(251, 113, 133, 0.95);
+}
+.toast-warning {
+  background: rgba(251, 191, 36, 0.95);
+}
+.toast-info {
+  background: rgba(56, 189, 248, 0.95);
+}
 ```
 
 ## 5. 页面级设计改造
@@ -316,11 +341,13 @@
 ### 5.1 登录/注册页面 (LoginPage / RegisterPage)
 
 **现状问题**：
+
 - 背景是紫色渐变，太冷
 - 卡片圆角 20px 但无 border，显得单薄
 - emoji 浮动动画单一
 
 **改造方案**：
+
 - **背景**：改为暖橙到暖黄的弥散渐变，加入漂浮的几何形状装饰（圆形、星星）
 - **卡片**：更大圆角(24px)，加暖色边框，更厚的阴影
 - **输入框**：橙色 focus ring
@@ -333,7 +360,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, #FFF5EB 0%, #FFEDD5 30%, #FDE68A 100%);
+  background: linear-gradient(135deg, #fff5eb 0%, #ffedd5 30%, #fde68a 100%);
   padding: var(--spacing-md);
   position: relative;
   overflow: hidden;
@@ -349,14 +376,18 @@
   animation: float 8s ease-in-out infinite;
 }
 .login-page::before {
-  width: 300px; height: 300px;
+  width: 300px;
+  height: 300px;
   background: var(--color-primary);
-  top: -100px; right: -50px;
+  top: -100px;
+  right: -50px;
 }
 .login-page::after {
-  width: 200px; height: 200px;
+  width: 200px;
+  height: 200px;
   background: var(--color-secondary);
-  bottom: -50px; left: -30px;
+  bottom: -50px;
+  left: -30px;
   animation-delay: -4s;
 }
 
@@ -375,11 +406,13 @@
 ### 5.2 侧边栏布局 (Layout)
 
 **现状问题**：
+
 - 侧边栏是深灰色(#1E293B)，与暖色主题冲突
 - 导航选中态是紫色渐变，与整体不协调
 - 移动端顶部导航过于紧凑
 
 **改造方案**：
+
 - **侧边栏背景**：改为奶油色(#FFF0E0)，搭配橙色品牌色
 - **导航链接**：默认暖灰色，hover 浅橙背景，选中态橙色渐变 + 白色文字
 - **用户区域**：增加头像占位（圆形 + 渐变背景）
@@ -393,7 +426,9 @@
   display: flex;
   flex-direction: column;
   position: fixed;
-  top: 0; left: 0; bottom: 0;
+  top: 0;
+  left: 0;
+  bottom: 0;
   z-index: 100;
   box-shadow: 4px 0 24px rgba(255, 140, 66, 0.08);
   border-right: 1px solid var(--border-color);
@@ -443,12 +478,14 @@
 ### 5.3 学生首页 Dashboard
 
 **现状问题**：
+
 - 大量内联样式
 - 三个统计卡片样式完全一致，没有区分度
 - 今日统计区域过于朴素
 - 底部按钮不够醒目
 
 **改造方案**：
+
 - **统计卡片**：使用彩色卡片变体（card-orange、card-blue、card-green），每个卡片有不同主题色
 - **数字展示**：更大字体(2rem)，加粗，使用对应主题色
 - **今日统计**：改为横向进度条/指标卡片样式
@@ -458,11 +495,13 @@
 ### 5.4 任务管理页面
 
 **现状问题**：
+
 - 表格头部灰色背景偏冷
 - 任务卡片样式普通
 - 审批页面评分按钮 hover 效果不够明显
 
 **改造方案**：
+
 - **表格**：表头使用暖色渐变背景，行 hover 使用暖色淡底
 - **任务卡片**：更大的圆角，左侧加彩色竖条区分状态
 - **评分按钮**：excellent 用绿色系、good 用蓝色系，hover 时有更明显视觉反馈
@@ -470,11 +509,13 @@
 ### 5.5 抽奖页面
 
 **现状问题**：
+
 - 转盘外圈黑色(#1E293B)与暖色主题冲突
 - 中心按钮红色太突兀
 - 盲盒的黄色 OK，但可更精致
 
 **改造方案**：
+
 - **转盘外圈**：改为深棕色(#5D4037)或橙色渐变，更像木质/糖果感
 - **中心按钮**：改为橙色渐变，与主题统一
 - **盲盒**：更立体的 3D 效果，阴影更柔和
@@ -483,10 +524,12 @@
 ### 5.6 代金券页面
 
 **现状问题**：
+
 - 余额卡片背景是紫色渐变，需要改为橙色
 - 整体缺少趣味性
 
 **改造方案**：
+
 - **余额卡片**：改为橙色渐变背景，更大的数字
 - **代金券列表**：增加图标、更清晰的交易类型区分
 - **提现审批**：更明显的金额颜色、更圆润的卡片
@@ -498,26 +541,50 @@
 ```css
 /* 入场动画 */
 @keyframes slideIn {
-  from { transform: translateX(100%) scale(0.95); opacity: 0; }
-  to { transform: translateX(0) scale(1); opacity: 1; }
+  from {
+    transform: translateX(100%) scale(0.95);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0) scale(1);
+    opacity: 1;
+  }
 }
 
 @keyframes fadeInUp {
-  from { transform: translateY(20px); opacity: 0; }
-  to { transform: translateY(0); opacity: 1; }
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
 }
 
 /* 浮动动画 - 用于emoji和装饰元素 */
 @keyframes float {
-  0%, 100% { transform: translateY(0) rotate(0deg); }
-  33% { transform: translateY(-10px) rotate(2deg); }
-  66% { transform: translateY(-5px) rotate(-1deg); }
+  0%,
+  100% {
+    transform: translateY(0) rotate(0deg);
+  }
+  33% {
+    transform: translateY(-10px) rotate(2deg);
+  }
+  66% {
+    transform: translateY(-5px) rotate(-1deg);
+  }
 }
 
 /* 脉冲 - 用于按钮、提示 */
 @keyframes pulse {
-  0%, 100% { box-shadow: 0 0 0 0 rgba(255, 140, 66, 0.4); }
-  50% { box-shadow: 0 0 0 12px rgba(255, 140, 66, 0); }
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(255, 140, 66, 0.4);
+  }
+  50% {
+    box-shadow: 0 0 0 12px rgba(255, 140, 66, 0);
+  }
 }
 
 /* 页面内容入场 */
@@ -549,35 +616,38 @@
 
 ### 8.1 样式文件调整
 
-| 文件 | 修改类型 | 说明 |
-|---|---|---|
-| `global.css` | 重写 | 全新色彩系统、字体、按钮、卡片、表单、动画 |
-| `Layout.module.css` | 重写 | 暖色侧边栏、新导航样式、移动端适配 |
-| `Login.module.css` | 重写 | 暖色背景、新卡片样式、装饰元素 |
-| `Lottery.module.css` | 修改 | 转盘/盲盒颜色适配新主题、弹窗样式 |
-| `TaskManagement.module.css` | 修改 | 表格颜色、任务卡片样式 |
-| `Voucher.module.css` | 修改 | 余额卡片颜色、列表样式 |
+| 文件                        | 修改类型 | 说明                                       |
+| --------------------------- | -------- | ------------------------------------------ |
+| `global.css`                | 重写     | 全新色彩系统、字体、按钮、卡片、表单、动画 |
+| `Layout.module.css`         | 重写     | 暖色侧边栏、新导航样式、移动端适配         |
+| `Login.module.css`          | 重写     | 暖色背景、新卡片样式、装饰元素             |
+| `Lottery.module.css`        | 修改     | 转盘/盲盒颜色适配新主题、弹窗样式          |
+| `TaskManagement.module.css` | 修改     | 表格颜色、任务卡片样式                     |
+| `Voucher.module.css`        | 修改     | 余额卡片颜色、列表样式                     |
 
 ### 8.2 组件内联样式清理
 
 将以下组件中的内联 `style={{...}}` 提取为 CSS 类：
 
-| 组件 | 说明 |
-|---|---|
+| 组件                   | 说明                         |
+| ---------------------- | ---------------------------- |
 | `StudentDashboard.tsx` | 统计卡片、数字样式、按钮样式 |
-| `ParentDashboard.tsx` | 类似的统计卡片 |
-| `StudentTaskPage.tsx` | 任务卡片样式 |
-| `LotteryPage.tsx` | 页面容器样式 |
-| `VoucherPage.tsx` | 余额展示样式 |
+| `ParentDashboard.tsx`  | 类似的统计卡片               |
+| `StudentTaskPage.tsx`  | 任务卡片样式                 |
+| `LotteryPage.tsx`      | 页面容器样式                 |
+| `VoucherPage.tsx`      | 余额展示样式                 |
 
 ### 8.3 字体加载
 
 在 `index.html` 中引入 Nunito 字体：
 
 ```html
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link
+  href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap"
+  rel="stylesheet"
+/>
 ```
 
 ## 9. 边界条件与异常处理

@@ -111,19 +111,19 @@
   background: var(--color-primary);
 }
 
-.task-card[data-status="pending"]::before {
+.task-card[data-status='pending']::before {
   background: var(--color-warning);
 }
 
-.task-card[data-status="submitted"]::before {
+.task-card[data-status='submitted']::before {
   background: var(--color-accent);
 }
 
-.task-card[data-status="approved"]::before {
+.task-card[data-status='approved']::before {
   background: var(--color-success);
 }
 
-.task-card[data-status="rejected"]::before {
+.task-card[data-status='rejected']::before {
   background: var(--color-error);
 }
 
@@ -207,10 +207,10 @@
   align-items: center;
   justify-content: center;
   font-size: 1.5rem;
-  background: linear-gradient(135deg, #FFF5EB, #FFEDD5);
+  background: linear-gradient(135deg, #fff5eb, #ffedd5);
   border-radius: var(--border-radius-md);
   flex-shrink: 0;
-  border: 1px solid #FED7AA;
+  border: 1px solid #fed7aa;
 }
 
 .approval-task-detail {
@@ -322,7 +322,7 @@
   font-size: var(--font-size-xs);
   color: var(--text-muted);
   font-weight: 600;
-  background: rgba(0,0,0,0.04);
+  background: rgba(0, 0, 0, 0.04);
   padding: 2px 8px;
   border-radius: var(--border-radius-full);
 }
@@ -330,12 +330,12 @@
 /* 优秀按钮 */
 .approval-btn-excellent:hover:not(:disabled) {
   background: linear-gradient(180deg, rgba(74, 222, 128, 0.08) 0%, rgba(74, 222, 128, 0.15) 100%);
-  color: #15803D;
+  color: #15803d;
 }
 
 .approval-btn-excellent:hover:not(:disabled) .approval-btn-points {
   background: rgba(74, 222, 128, 0.15);
-  color: #15803D;
+  color: #15803d;
 }
 
 .approval-btn-excellent:active:not(:disabled) {
@@ -345,12 +345,12 @@
 /* 良好按钮 */
 .approval-btn-good:hover:not(:disabled) {
   background: linear-gradient(180deg, rgba(56, 189, 248, 0.08) 0%, rgba(56, 189, 248, 0.15) 100%);
-  color: #0369A1;
+  color: #0369a1;
 }
 
 .approval-btn-good:hover:not(:disabled) .approval-btn-points {
   background: rgba(56, 189, 248, 0.15);
-  color: #0369A1;
+  color: #0369a1;
 }
 
 .approval-btn-good:active:not(:disabled) {
@@ -360,7 +360,7 @@
 /* 驳回按钮 */
 .approval-btn-reject:hover:not(:disabled) {
   background: linear-gradient(180deg, rgba(251, 113, 133, 0.08) 0%, rgba(251, 113, 133, 0.15) 100%);
-  color: #BE123C;
+  color: #be123c;
 }
 
 .approval-btn-reject:active:not(:disabled) {
@@ -371,10 +371,10 @@
 .task-rating-box {
   margin-top: var(--spacing-sm);
   padding: 10px 14px;
-  background: linear-gradient(135deg, #F0FDF4 0%, #DCFCE7 100%);
+  background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
   border-radius: var(--border-radius-md);
   font-size: var(--font-size-sm);
-  border: 1px solid #BBF7D0;
+  border: 1px solid #bbf7d0;
   font-weight: 600;
 }
 
@@ -387,11 +387,11 @@
 .task-reject-box {
   margin-top: var(--spacing-sm);
   padding: 10px 14px;
-  background: linear-gradient(135deg, #FFF1F2 0%, #FFE4E6 100%);
+  background: linear-gradient(135deg, #fff1f2 0%, #ffe4e6 100%);
   border-radius: var(--border-radius-md);
   font-size: var(--font-size-sm);
   color: var(--color-error);
-  border: 1px solid #FECDD3;
+  border: 1px solid #fecdd3;
   font-weight: 600;
 }
 
@@ -423,7 +423,7 @@
 .task-type-selector {
   display: flex;
   gap: var(--spacing-sm);
-  background: #F3F0ED;
+  background: #f3f0ed;
   border-radius: var(--border-radius-md);
   padding: 4px;
 }
@@ -434,7 +434,7 @@
   cursor: pointer;
 }
 
-.task-type-option input[type="radio"] {
+.task-type-option input[type='radio'] {
   position: absolute;
   opacity: 0;
   width: 0;
@@ -449,20 +449,20 @@
   border-radius: var(--border-radius-sm);
   font-weight: 700;
   font-size: var(--font-size-sm);
-  color: #5C5650 !important;
+  color: #5c5650 !important;
   transition: all 0.2s ease;
   background: transparent;
 }
 
 .task-type-option.active .task-type-label {
   border-color: transparent;
-  background: #FFFFFF;
-  color: #E66A20 !important;
+  background: #ffffff;
+  color: #e66a20 !important;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
 }
 
 .task-type-label:hover {
-  color: #E66A20 !important;
+  color: #e66a20 !important;
 }
 
 /* ===== 周期日期选择器 ===== */
@@ -475,12 +475,12 @@
 .weekday-btn {
   width: 52px;
   height: 40px;
-  border: 2px solid #E5E0DB;
+  border: 2px solid #e5e0db;
   border-radius: var(--border-radius-md);
-  background: #FFFFFF;
+  background: #ffffff;
   font-size: var(--font-size-sm);
   font-weight: 700;
-  color: #5C5650 !important;
+  color: #5c5650 !important;
   cursor: pointer;
   transition: all 0.2s ease;
   font-family: inherit;
@@ -488,13 +488,13 @@
 
 .weekday-btn:hover {
   border-color: var(--color-primary);
-  color: #E66A20 !important;
+  color: #e66a20 !important;
 }
 
 .weekday-btn.selected {
   border-color: var(--color-primary);
-  background: linear-gradient(135deg, #FFF5EB 0%, #FFEDD5 100%);
-  color: #E66A20 !important;
+  background: linear-gradient(135deg, #fff5eb 0%, #ffedd5 100%);
+  color: #e66a20 !important;
 }
 
 /* ===== 任务类型标签 ===== */
@@ -508,18 +508,18 @@
 }
 
 .task-type-badge.type-temporary {
-  background: #F1F5F9;
-  color: #64748B;
+  background: #f1f5f9;
+  color: #64748b;
 }
 
 .task-type-badge.type-daily {
-  background: #DBEAFE;
-  color: #2563EB;
+  background: #dbeafe;
+  color: #2563eb;
 }
 
 .task-type-badge.type-periodic {
-  background: #FEF3C7;
-  color: #D97706;
+  background: #fef3c7;
+  color: #d97706;
 }
 
 .task-weekdays-hint {
@@ -587,4 +587,3 @@
 .approval-meta strong {
   color: var(--text-primary);
 }
-
