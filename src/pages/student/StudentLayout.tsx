@@ -1,17 +1,17 @@
-import { useState } from 'react';
-import { Outlet, NavLink, useNavigate } from 'react-router-dom';
-import { useAuth } from '../../contexts/AuthContext';
+import { useState } from 'react'
+import { Outlet, NavLink, useNavigate } from 'react-router-dom'
+import { useAuth } from '../../contexts/AuthContext'
 
 export default function StudentLayout() {
-  const { user, logout } = useAuth();
-  const navigate = useNavigate();
-  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const { user, logout } = useAuth()
+  const navigate = useNavigate()
+  const [dropdownOpen, setDropdownOpen] = useState(false)
 
   const handleLogout = () => {
-    logout();
-    navigate('/login');
-    setDropdownOpen(false);
-  };
+    logout()
+    navigate('/login')
+    setDropdownOpen(false)
+  }
 
   const navItems = [
     { to: '/student/dashboard', icon: '🏠', label: '首页' },
@@ -19,7 +19,7 @@ export default function StudentLayout() {
     { to: '/student/math-boss', icon: '⚔️', label: '数学打怪' },
     { to: '/student/lottery', icon: '🎰', label: '抽奖中心' },
     { to: '/student/voucher', icon: '💰', label: '我的钱包' },
-  ];
+  ]
 
   return (
     <div className="layout">
@@ -34,7 +34,7 @@ export default function StudentLayout() {
           </div>
 
           <div className="navbar-nav">
-            {navItems.map(item => (
+            {navItems.map((item) => (
               <NavLink
                 key={item.to}
                 to={item.to}
@@ -72,5 +72,5 @@ export default function StudentLayout() {
         <Outlet />
       </main>
     </div>
-  );
+  )
 }

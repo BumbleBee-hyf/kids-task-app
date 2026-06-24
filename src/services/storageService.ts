@@ -1,16 +1,7 @@
-import {
-  STORAGE_KEYS,
-} from '../types';
-import type {
-  User,
-  Task,
-  Voucher,
-  WithdrawRequest,
-  PointRecord,
-  LotteryConfig,
-} from '../types';
+import { STORAGE_KEYS } from '../types'
+import type { User, Task, Voucher, WithdrawRequest, PointRecord, LotteryConfig } from '../types'
 
-const API_BASE = '/api';
+const API_BASE = '/api'
 
 // ============ API 工具 ============
 
@@ -19,337 +10,396 @@ async function request<T>(method: string, path: string, body?: unknown): Promise
     method,
     headers: { 'Content-Type': 'application/json' },
     body: body ? JSON.stringify(body) : undefined,
-  });
+  })
   if (!res.ok) {
-    const err = await res.json().catch(() => ({ error: 'Request failed' }));
-    throw new Error(err.error || `HTTP ${res.status}`);
+    const err = await res.json().catch(() => ({ error: 'Request failed' }))
+    throw new Error(err.error || `HTTP ${res.status}`)
   }
   if (res.status === 204) {
-    return undefined as T;
+    return undefined as T
   }
-  return res.json() as Promise<T>;
+  return res.json() as Promise<T>
 }
 
 // ============ 用户相关 ============
 
 export const userStorage = {
   getAll: async (): Promise<User[]> => {
-    return request<User[]>('GET', '/users');
+    return request<User[]>('GET', '/users')
   },
 
   getById: async (id: string): Promise<User | undefined> => {
     try {
-      return await request<User>('GET', `/users/${id}`);
+      return await request<User>('GET', `/users/${id}`)
     } catch {
-      return undefined;
+      return undefined
     }
   },
 
   getByUsername: async (username: string): Promise<User | undefined> => {
     try {
-      return await request<User>('GET', `/users/username/${username}`);
+      return await request<User>('GET', `/users/username/${username}`)
     } catch {
-      return undefined;
+      return undefined
     }
   },
 
   create: async (data: Omit<User, 'id' | 'createdAt'>): Promise<User> => {
-    return request<User>('POST', '/users', data);
+    return request<User>('POST', '/users', data)
   },
 
   getStudents: async (): Promise<User[]> => {
-    return request<User[]>('GET', '/users/role/student');
+    return request<User[]>('GET', '/users/role/student')
   },
-};
+}
 
 // ============ 任务相关 ============
 
 export const taskStorage = {
   getAll: async (): Promise<Task[]> => {
-    return request<Task[]>('GET', '/tasks');
+    return request<Task[]>('GET', '/tasks')
   },
 
   getById: async (id: string): Promise<Task | undefined> => {
     try {
-      return await request<Task>('GET', `/tasks/${id}`);
+      return await request<Task>('GET', `/tasks/${id}`)
     } catch {
-      return undefined;
+      return undefined
     }
   },
 
   getByStudent: async (studentId: string): Promise<Task[]> => {
-    return request<Task[]>('GET', `/tasks/student/${studentId}`);
+    return request<Task[]>('GET', `/tasks/student/${studentId}`)
   },
 
   getByParent: async (parentId: string): Promise<Task[]> => {
-    return request<Task[]>('GET', `/tasks/parent/${parentId}`);
+    return request<Task[]>('GET', `/tasks/parent/${parentId}`)
   },
 
   getByStatus: async (status: Task['status']): Promise<Task[]> => {
-    const all = await request<Task[]>('GET', '/tasks');
-    return all.filter(t => t.status === status);
+    const all = await request<Task[]>('GET', '/tasks')
+    return all.filter((t) => t.status === status)
   },
 
   create: async (data: Omit<Task, 'id' | 'createdAt' | 'status'>): Promise<Task> => {
-    return request<Task>('POST', '/tasks', data);
+    return request<Task>('POST', '/tasks', data)
   },
 
   update: async (id: string, updates: Partial<Task>): Promise<Task | null> => {
     try {
-      return await request<Task>('PATCH', `/tasks/${id}`, updates);
+      return await request<Task>('PATCH', `/tasks/${id}`, updates)
     } catch {
-      return null;
+      return null
     }
   },
 
   delete: async (id: string): Promise<boolean> => {
     try {
-      await request<void>('DELETE', `/tasks/${id}`);
-      return true;
+      await request<void>('DELETE', `/tasks/${id}`)
+      return true
     } catch {
-      return false;
+      return false
     }
   },
 
   submit: async (id: string, studentId: string): Promise<Task | null> => {
     try {
-      return await request<Task>('POST', `/tasks/${id}/submit`, { studentId });
+      return await request<Task>('POST', `/tasks/${id}/submit`, { studentId })
     } catch {
-      return null;
+      return null
     }
   },
 
   approve: async (id: string, rating: Task['rating']): Promise<Task | null> => {
     try {
-      return await request<Task>('POST', `/tasks/${id}/approve`, { rating });
+      return await request<Task>('POST', `/tasks/${id}/approve`, { rating })
     } catch {
-      return null;
+      return null
     }
   },
 
   reject: async (id: string): Promise<Task | null> => {
     try {
-      return await request<Task>('POST', `/tasks/${id}/reject`);
+      return await request<Task>('POST', `/tasks/${id}/reject`)
     } catch {
-      return null;
+      return null
     }
   },
-};
+}
 
 // ============ 积分相关 ============
 
 export const pointStorage = {
   getAll: async (): Promise<PointRecord[]> => {
-    return request<PointRecord[]>('GET', '/points');
+    return request<PointRecord[]>('GET', '/points')
   },
 
   getByStudent: async (studentId: string): Promise<PointRecord[]> => {
-    return request<PointRecord[]>('GET', `/points/student/${studentId}`);
+    return request<PointRecord[]>('GET', `/points/student/${studentId}`)
   },
 
   getBalance: async (studentId: string): Promise<number> => {
-    const res = await request<{ balance: number }>('GET', `/points/student/${studentId}/balance`);
-    return res.balance;
+    const res = await request<{ balance: number }>('GET', `/points/student/${studentId}/balance`)
+    return res.balance
   },
 
   create: async (data: Omit<PointRecord, 'id' | 'createdAt'>): Promise<PointRecord> => {
-    return request<PointRecord>('POST', '/points', data);
+    return request<PointRecord>('POST', '/points', data)
   },
-};
+}
 
 // ============ 代金券相关 ============
 
 export const voucherStorage = {
   getAll: async (): Promise<Voucher[]> => {
-    return request<Voucher[]>('GET', '/vouchers');
+    return request<Voucher[]>('GET', '/vouchers')
   },
 
   getByStudent: async (studentId: string): Promise<Voucher[]> => {
-    return request<Voucher[]>('GET', `/vouchers/student/${studentId}`);
+    return request<Voucher[]>('GET', `/vouchers/student/${studentId}`)
   },
 
   getBalance: async (studentId: string): Promise<number> => {
-    const res = await request<{ balance: number }>('GET', `/vouchers/student/${studentId}/balance`);
-    return res.balance;
+    const res = await request<{ balance: number }>('GET', `/vouchers/student/${studentId}/balance`)
+    return res.balance
   },
 
   create: async (data: Omit<Voucher, 'id' | 'createdAt'>): Promise<Voucher> => {
-    return request<Voucher>('POST', '/vouchers', data);
+    return request<Voucher>('POST', '/vouchers', data)
   },
 
   deduct: async (studentId: string, amount: number): Promise<boolean> => {
     try {
-      const res = await request<{ success: boolean }>('POST', `/vouchers/student/${studentId}/deduct`, { amount });
-      return res.success;
+      const res = await request<{ success: boolean }>(
+        'POST',
+        `/vouchers/student/${studentId}/deduct`,
+        { amount },
+      )
+      return res.success
     } catch {
-      return false;
+      return false
     }
   },
-};
+}
 
 // ============ 提现相关 ============
 
 export const withdrawStorage = {
   getAll: async (): Promise<WithdrawRequest[]> => {
-    return request<WithdrawRequest[]>('GET', '/withdraws');
+    return request<WithdrawRequest[]>('GET', '/withdraws')
   },
 
   getByStudent: async (studentId: string): Promise<WithdrawRequest[]> => {
-    return request<WithdrawRequest[]>('GET', `/withdraws/student/${studentId}`);
+    return request<WithdrawRequest[]>('GET', `/withdraws/student/${studentId}`)
   },
 
   getPending: async (): Promise<WithdrawRequest[]> => {
-    return request<WithdrawRequest[]>('GET', '/withdraws/pending');
+    return request<WithdrawRequest[]>('GET', '/withdraws/pending')
   },
 
-  create: async (data: Omit<WithdrawRequest, 'id' | 'createdAt' | 'status'>): Promise<WithdrawRequest> => {
-    return request<WithdrawRequest>('POST', '/withdraws', data);
+  create: async (
+    data: Omit<WithdrawRequest, 'id' | 'createdAt' | 'status'>,
+  ): Promise<WithdrawRequest> => {
+    return request<WithdrawRequest>('POST', '/withdraws', data)
   },
 
   approve: async (id: string, parentId: string): Promise<WithdrawRequest | null> => {
     try {
-      return await request<WithdrawRequest>('POST', `/withdraws/${id}/approve`, { parentId });
+      return await request<WithdrawRequest>('POST', `/withdraws/${id}/approve`, { parentId })
     } catch {
-      return null;
+      return null
     }
   },
 
   reject: async (id: string, parentId: string): Promise<WithdrawRequest | null> => {
     try {
-      return await request<WithdrawRequest>('POST', `/withdraws/${id}/reject`, { parentId });
+      return await request<WithdrawRequest>('POST', `/withdraws/${id}/reject`, { parentId })
     } catch {
-      return null;
+      return null
     }
   },
-};
+}
 
 // ============ 抽奖配置相关 ============
 
 export const lotteryConfigStorage = {
   getConfig: async (): Promise<LotteryConfig> => {
-    return request<LotteryConfig>('GET', '/lottery/config');
+    return request<LotteryConfig>('GET', '/lottery/config')
   },
 
   saveConfig: async (data: Partial<LotteryConfig>): Promise<LotteryConfig> => {
-    return request<LotteryConfig>('PUT', '/lottery/config', data);
+    return request<LotteryConfig>('PUT', '/lottery/config', data)
   },
 
   resetConfig: async (): Promise<LotteryConfig> => {
-    return request<LotteryConfig>('POST', '/lottery/config/reset');
+    return request<LotteryConfig>('POST', '/lottery/config/reset')
   },
-};
+}
 
 // ============ 抽奖记录相关 ============
 
 export const lotteryStorage = {
   getTodayCount: async (): Promise<number> => {
-    const res = await request<{ count: number }>('GET', '/lottery/today');
-    return res.count;
+    const res = await request<{ count: number }>('GET', '/lottery/today')
+    return res.count
   },
 
   incrementToday: async (): Promise<void> => {
-    await request<void>('POST', '/lottery/increment');
+    await request<void>('POST', '/lottery/increment')
   },
 
-  draw: async (studentId: string, type: 'box' | 'wheel'): Promise<{
-    success: boolean;
-    type: 'money' | 'joke';
-    amount: number;
-    jokeEmoji?: string;
-    segmentIndex?: number;
-    pointBalance: number;
+  draw: async (
+    studentId: string,
+    type: 'box' | 'wheel',
+  ): Promise<{
+    success: boolean
+    type: 'money' | 'joke'
+    amount: number
+    jokeEmoji?: string
+    segmentIndex?: number
+    pointBalance: number
   }> => {
-    return request('POST', '/lottery/draw', { studentId, type });
+    return request('POST', '/lottery/draw', { studentId, type })
   },
-};
+}
 
 // ============ 签到相关 ============
 
 export const checkinStorage = {
-  getStatus: async (studentId: string): Promise<{
-    checkedInToday: boolean;
-    streak: number;
-    hasCompletedTask: boolean;
-    checkinPoints: number;
+  getStatus: async (
+    studentId: string,
+  ): Promise<{
+    checkedInToday: boolean
+    streak: number
+    hasCompletedTask: boolean
+    checkinPoints: number
   }> => {
-    return request('GET', `/checkin/status/${studentId}`);
+    return request('GET', `/checkin/status/${studentId}`)
   },
 
-  checkin: async (studentId: string): Promise<{
-    success: boolean;
-    streak: number;
-    points: number;
+  checkin: async (
+    studentId: string,
+  ): Promise<{
+    success: boolean
+    streak: number
+    points: number
   }> => {
-    return request('POST', '/checkin', { studentId });
+    return request('POST', '/checkin', { studentId })
   },
-};
+}
 
 // ============ 数学打Boss相关 ============
 
 export const mathBossStorage = {
-  getStatus: async (studentId: string): Promise<{
-    playCount: number;
-    bestScore: number;
-    bestReward: number;
-    hiddenUnlocked: boolean;
+  getStatus: async (
+    studentId: string,
+  ): Promise<{
+    playCount: number
+    bestScore: number
+    bestReward: number
+    hiddenUnlocked: boolean
   }> => {
-    return request('GET', `/math-boss/status/${studentId}`);
+    return request('GET', `/math-boss/status/${studentId}`)
   },
 
-  getHiddenStatus: async (studentId: string): Promise<{
-    unlocked: boolean;
-    todayPlayCount: number;
-    todayBestScore: number;
-    todayTheme: 'minecraft' | 'pvz' | 'tank';
+  getHiddenStatus: async (
+    studentId: string,
+  ): Promise<{
+    unlocked: boolean
+    todayPlayCount: number
+    todayBestScore: number
+    todayTheme: 'minecraft' | 'pvz' | 'tank'
   }> => {
-    return request('GET', `/math-boss/hidden/status/${studentId}`);
+    return request('GET', `/math-boss/hidden/status/${studentId}`)
   },
 
-  start: async (studentId: string, mode: 'normal' | 'hidden' = 'normal'): Promise<{
-    success: boolean;
-    question: { a: number; b: number; operator?: '+' | '-'; answer?: number; result?: number; correctOperator?: '+' | '-'; difficulty: string; mode?: string };
-    pointBalance: number;
+  start: async (
+    studentId: string,
+    mode: 'normal' | 'hidden' = 'normal',
+  ): Promise<{
+    success: boolean
+    question: {
+      a: number
+      b: number
+      operator?: '+' | '-'
+      answer?: number
+      result?: number
+      correctOperator?: '+' | '-'
+      difficulty: string
+      mode?: string
+    }
+    pointBalance: number
   }> => {
-    return request('POST', '/math-boss/start', { studentId, mode });
+    return request('POST', '/math-boss/start', { studentId, mode })
   },
 
-  getQuestion: async (difficulty: string, mode: 'normal' | 'hidden' = 'normal'): Promise<{
-    success: boolean;
-    question: { a: number; b: number; operator?: '+' | '-'; answer?: number; result?: number; correctOperator?: '+' | '-'; difficulty: string; mode?: string };
+  getQuestion: async (
+    difficulty: string,
+    mode: 'normal' | 'hidden' = 'normal',
+  ): Promise<{
+    success: boolean
+    question: {
+      a: number
+      b: number
+      operator?: '+' | '-'
+      answer?: number
+      result?: number
+      correctOperator?: '+' | '-'
+      difficulty: string
+      mode?: string
+    }
   }> => {
-    return request('POST', '/math-boss/question', { difficulty, mode });
+    return request('POST', '/math-boss/question', { difficulty, mode })
   },
 
-  finish: async (studentId: string, bossesDefeated: number, totalQuestions: number, correctCount: number, mode: 'normal' | 'hidden' = 'normal', playerHearts?: number, theme?: string): Promise<{
-    success: boolean;
-    bossesDefeated: number;
-    totalQuestions: number;
-    correctCount: number;
-    reward: number;
-    pointBalance: number;
-    unlockedHidden?: boolean;
-    unlockedSkins?: { bossIcon: string; theme: string }[];
+  finish: async (
+    studentId: string,
+    bossesDefeated: number,
+    totalQuestions: number,
+    correctCount: number,
+    mode: 'normal' | 'hidden' = 'normal',
+    playerHearts?: number,
+    theme?: string,
+  ): Promise<{
+    success: boolean
+    bossesDefeated: number
+    totalQuestions: number
+    correctCount: number
+    reward: number
+    pointBalance: number
+    unlockedHidden?: boolean
+    unlockedSkins?: { bossIcon: string; theme: string }[]
   }> => {
-    return request('POST', '/math-boss/finish', { studentId, bossesDefeated, totalQuestions, correctCount, mode, playerHearts, theme });
+    return request('POST', '/math-boss/finish', {
+      studentId,
+      bossesDefeated,
+      totalQuestions,
+      correctCount,
+      mode,
+      playerHearts,
+      theme,
+    })
   },
 
-  getSkins: async (studentId: string): Promise<{ skins: { id: string; bossIcon: string; theme: string; unlockedAt: string }[] }> => {
-    return request('GET', `/math-boss/skins/${studentId}`);
+  getSkins: async (
+    studentId: string,
+  ): Promise<{ skins: { id: string; bossIcon: string; theme: string; unlockedAt: string }[] }> => {
+    return request('GET', `/math-boss/skins/${studentId}`)
   },
-};
+}
 
 // ============ 会话管理 ============
 
 export const sessionStorage = {
   getCurrentUserId: (): string | null => {
-    return localStorage.getItem(STORAGE_KEYS.CURRENT_USER);
+    return localStorage.getItem(STORAGE_KEYS.CURRENT_USER)
   },
 
   setCurrentUser: (userId: string): void => {
-    localStorage.setItem(STORAGE_KEYS.CURRENT_USER, userId);
+    localStorage.setItem(STORAGE_KEYS.CURRENT_USER, userId)
   },
 
   clear: (): void => {
-    localStorage.removeItem(STORAGE_KEYS.CURRENT_USER);
+    localStorage.removeItem(STORAGE_KEYS.CURRENT_USER)
   },
-};
+}

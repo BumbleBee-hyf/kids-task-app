@@ -1,38 +1,38 @@
 :root {
   /* === 色彩系统 - 糖果乐园活泼配色 === */
-  --color-primary: #FF8C42;
-  --color-primary-light: #FFB380;
-  --color-primary-dark: #E66A20;
+  --color-primary: #ff8c42;
+  --color-primary-light: #ffb380;
+  --color-primary-dark: #e66a20;
 
-  --color-secondary: #4ADE80;
-  --color-secondary-light: #86EFAC;
-  --color-secondary-dark: #22C55E;
+  --color-secondary: #4ade80;
+  --color-secondary-light: #86efac;
+  --color-secondary-dark: #22c55e;
 
-  --color-accent: #38BDF8;
-  --color-accent-light: #7DD3FC;
-  --color-accent-dark: #0EA5E9;
+  --color-accent: #38bdf8;
+  --color-accent-light: #7dd3fc;
+  --color-accent-dark: #0ea5e9;
 
   /* 背景色 */
-  --bg-page: #FFF8F0;
-  --bg-card: #FFFFFF;
-  --bg-sidebar: #FFF0E0;
-  --bg-elevated: #FFF5EB;
-  --bg-warm: #FFECD2;
+  --bg-page: #fff8f0;
+  --bg-card: #ffffff;
+  --bg-sidebar: #fff0e0;
+  --bg-elevated: #fff5eb;
+  --bg-warm: #ffecd2;
 
   /* 状态色 */
-  --color-success: #4ADE80;
-  --color-warning: #FBBF24;
-  --color-error: #FB7185;
-  --color-info: #38BDF8;
+  --color-success: #4ade80;
+  --color-warning: #fbbf24;
+  --color-error: #fb7185;
+  --color-info: #38bdf8;
 
   /* 文字色 */
-  --text-primary: #2D2A26;
-  --text-secondary: #6B6560;
-  --text-muted: #A8A29E;
-  --text-inverse: #FFFFFF;
+  --text-primary: #2d2a26;
+  --text-secondary: #6b6560;
+  --text-muted: #a8a29e;
+  --text-inverse: #ffffff;
 
   /* 边框与阴影 */
-  --border-color: #FDE8D0;
+  --border-color: #fde8d0;
   --border-radius-xl: 24px;
   --border-radius-lg: 16px;
   --border-radius-md: 12px;
@@ -40,13 +40,15 @@
   --border-radius-full: 9999px;
 
   --shadow-sm: 0 2px 6px rgba(255, 140, 66, 0.06);
-  --shadow-md: 0 4px 16px rgba(255, 140, 66, 0.10);
+  --shadow-md: 0 4px 16px rgba(255, 140, 66, 0.1);
   --shadow-lg: 0 8px 30px rgba(255, 140, 66, 0.14);
   --shadow-xl: 0 16px 48px rgba(255, 140, 66, 0.18);
   --shadow-colored: 0 6px 20px rgba(255, 140, 66, 0.25);
 
   /* 字体 */
-  --font-family: 'Nunito', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', sans-serif;
+  --font-family:
+    'Nunito', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Hiragino Sans GB',
+    'Microsoft YaHei', sans-serif;
   --font-size-xs: 0.75rem;
   --font-size-sm: 0.875rem;
   --font-size-md: 1rem;
@@ -77,7 +79,9 @@ html {
   scroll-behavior: smooth;
 }
 
-html, body, #root {
+html,
+body,
+#root {
   height: 100%;
   overflow: hidden;
   background-color: var(--bg-page);
@@ -91,7 +95,9 @@ body {
 }
 
 @media (max-width: 640px) {
-  html, body, #root {
+  html,
+  body,
+  #root {
     height: auto;
     overflow: visible;
   }
@@ -119,20 +125,22 @@ button {
   margin-right: 5px;
 }
 button.selected {
-  color: #E66A20 !important;
+  color: #e66a20 !important;
 }
 
-input, select, textarea {
+input,
+select,
+textarea {
   font-family: inherit;
   font-size: var(--font-size-md);
   outline: none;
-  color: #2D2A26;
-  background: #FFF8F0;
+  color: #2d2a26;
+  background: #fff8f0;
 }
 
 select option {
-  color: #2D2A26;
-  background: #FFFFFF;
+  color: #2d2a26;
+  background: #ffffff;
 }
 
 input:focus-visible,
@@ -158,7 +166,7 @@ button:focus-visible {
   position: relative;
   overflow: hidden;
   letter-spacing: 0.02em;
-  color: #5C5650;
+  color: #5c5650;
 }
 
 .btn::before {
@@ -211,8 +219,8 @@ button:focus-visible {
 
 .btn-outline {
   background: white;
-  border-color: #E5E0DB;
-  color: #5C5650 !important;
+  border-color: #e5e0db;
+  color: #5c5650 !important;
 }
 .btn-outline:hover {
   border-color: var(--color-primary);
@@ -223,7 +231,7 @@ button:focus-visible {
 }
 
 .btn-danger {
-  background: linear-gradient(135deg, var(--color-error), #F43F5E);
+  background: linear-gradient(135deg, var(--color-error), #f43f5e);
   color: white;
   box-shadow: 0 4px 12px rgba(251, 113, 133, 0.35);
 }
@@ -267,18 +275,18 @@ button:focus-visible {
 }
 
 .card-orange {
-  background: linear-gradient(135deg, #FFF5EB 0%, #FFEDD5 100%);
-  border-color: #FED7AA;
+  background: linear-gradient(135deg, #fff5eb 0%, #ffedd5 100%);
+  border-color: #fed7aa;
 }
 
 .card-green {
-  background: linear-gradient(135deg, #F0FDF4 0%, #DCFCE7 100%);
-  border-color: #BBF7D0;
+  background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%);
+  border-color: #bbf7d0;
 }
 
 .card-blue {
-  background: linear-gradient(135deg, #F0F9FF 0%, #E0F2FE 100%);
-  border-color: #BAE6FD;
+  background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+  border-color: #bae6fd;
 }
 
 /* === 通用表单样式 === */
@@ -361,10 +369,18 @@ button:focus-visible {
   border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
-.toast-success { background: rgba(74, 222, 128, 0.95); }
-.toast-error { background: rgba(251, 113, 133, 0.95); }
-.toast-warning { background: rgba(251, 191, 36, 0.95); }
-.toast-info { background: rgba(56, 189, 248, 0.95); }
+.toast-success {
+  background: rgba(74, 222, 128, 0.95);
+}
+.toast-error {
+  background: rgba(251, 113, 133, 0.95);
+}
+.toast-warning {
+  background: rgba(251, 191, 36, 0.95);
+}
+.toast-info {
+  background: rgba(56, 189, 248, 0.95);
+}
 
 /* === 状态标签 === */
 .status-badge {
@@ -378,10 +394,22 @@ button:focus-visible {
   letter-spacing: 0.02em;
 }
 
-.status-pending { background: #FEF3C7; color: #B45309; }
-.status-submitted { background: #DBEAFE; color: #1D4ED8; }
-.status-approved { background: #DCFCE7; color: #15803D; }
-.status-rejected { background: #FEE2E2; color: #B91C1C; }
+.status-pending {
+  background: #fef3c7;
+  color: #b45309;
+}
+.status-submitted {
+  background: #dbeafe;
+  color: #1d4ed8;
+}
+.status-approved {
+  background: #dcfce7;
+  color: #15803d;
+}
+.status-rejected {
+  background: #fee2e2;
+  color: #b91c1c;
+}
 
 /* === 空状态 === */
 .empty-state {
@@ -412,35 +440,65 @@ button:focus-visible {
 
 /* === 动画 === */
 @keyframes slideIn {
-  from { transform: translateX(100%) scale(0.95); opacity: 0; }
-  to { transform: translateX(0) scale(1); opacity: 1; }
+  from {
+    transform: translateX(100%) scale(0.95);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0) scale(1);
+    opacity: 1;
+  }
 }
 
 @keyframes fadeInUp {
-  from { transform: translateY(20px); opacity: 0; }
-  to { transform: translateY(0); opacity: 1; }
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
 }
 
 @keyframes float {
-  0%, 100% { transform: translateY(0) rotate(0deg); }
-  33% { transform: translateY(-10px) rotate(2deg); }
-  66% { transform: translateY(-5px) rotate(-1deg); }
+  0%,
+  100% {
+    transform: translateY(0) rotate(0deg);
+  }
+  33% {
+    transform: translateY(-10px) rotate(2deg);
+  }
+  66% {
+    transform: translateY(-5px) rotate(-1deg);
+  }
 }
 
 @keyframes pulse {
-  0%, 100% { box-shadow: 0 0 0 0 rgba(255, 140, 66, 0.4); }
-  50% { box-shadow: 0 0 0 12px rgba(255, 140, 66, 0); }
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(255, 140, 66, 0.4);
+  }
+  50% {
+    box-shadow: 0 0 0 12px rgba(255, 140, 66, 0);
+  }
 }
 
 /* === 偏好减少动画 === */
 @media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after {
+  *,
+  *::before,
+  *::after {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
   }
-  html { scroll-behavior: auto; }
-  .page-container { animation: none; }
+  html {
+    scroll-behavior: auto;
+  }
+  .page-container {
+    animation: none;
+  }
 }
 
 /* === 统计卡片 === */
@@ -510,11 +568,11 @@ button:focus-visible {
 }
 
 .tab-buttons .btn {
-  color: #5C5650;
+  color: #5c5650;
 }
 
 .tab-buttons .btn-primary {
-  color: #FFFFFF;
+  color: #ffffff;
 }
 
 /* === 页面副标题 === */
@@ -710,7 +768,7 @@ button:focus-visible {
 
 /* === 欢迎卡片 === */
 .welcome-card {
-  background: linear-gradient(135deg, #FFF8F0 0%, #FFEDD5 50%, #FDE8D0 100%);
+  background: linear-gradient(135deg, #fff8f0 0%, #ffedd5 50%, #fde8d0 100%);
   border: 1px solid var(--border-color);
   border-radius: var(--border-radius-xl);
   padding: var(--spacing-xl);
@@ -749,7 +807,7 @@ button:focus-visible {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, #FFE4C4, #FFDAB9);
+  background: linear-gradient(135deg, #ffe4c4, #ffdab9);
   border-radius: var(--border-radius-full);
   font-size: 2.5rem;
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
@@ -989,7 +1047,8 @@ button:focus-visible {
 
 /* === 响应式 === */
 @media (max-width: 768px) {
-  .grid-2, .grid-3 {
+  .grid-2,
+  .grid-3 {
     grid-template-columns: 1fr;
   }
   .page-container {
