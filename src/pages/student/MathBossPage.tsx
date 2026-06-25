@@ -1560,22 +1560,24 @@ export default function MathBossPage() {
   const renderResult = () => {
     const allDefeated = bossesDefeated === bossArray.length
     const isHidden = gameMode === 'hidden'
+    const totalBosses = bossArray.length
+    const ratio = totalBosses > 0 ? bossesDefeated / totalBosses : 0
     const emoji = allDefeated
       ? '🏆'
-      : bossesDefeated >= 7
+      : ratio >= 0.7
         ? '🎉'
-        : bossesDefeated >= 5
+        : ratio >= 0.5
           ? '💪'
-          : bossesDefeated >= 3
+          : ratio >= 0.3
             ? '🌟'
             : '📚'
     const title = allDefeated
       ? '完美通关！'
-      : bossesDefeated >= 7
+      : ratio >= 0.7
         ? '非常厉害！'
-        : bossesDefeated >= 5
+        : ratio >= 0.5
           ? '还不错！'
-          : bossesDefeated >= 3
+          : ratio >= 0.3
             ? '初露锋芒！'
             : '继续加油！'
 
@@ -1588,9 +1590,16 @@ export default function MathBossPage() {
             <div className={styles.unlockCelebration}>
               <div className={styles.unlockGlow} />
               <div className={styles.unlockTitle}>🌀 传送门已开启！</div>
-              <div className={styles.unlockSubtitle}>我的世界隐藏关卡已解锁</div>
+              <div className={styles.unlockSubtitle}>
+                {hiddenTheme === 'pvz'
+                  ? '植物大战僵尸'
+                  : hiddenTheme === 'tank'
+                    ? '超能装甲兵团'
+                    : '我的世界'}
+                隐藏关卡已解锁
+              </div>
               <div className={styles.unlockBossIcons}>
-                {MINECRAFT_BOSSES.map((boss, i) => (
+                {bossArray.map((boss, i) => (
                   <div key={i} className={styles.unlockBossIcon}>
                     <BossAvatar
                       icon={boss.icon}
@@ -1606,7 +1615,7 @@ export default function MathBossPage() {
                 onClick={() => {
                   setShowUnlockCelebration(false)
                   resetGame()
-                  setTimeout(() => handleStartHiddenGame('minecraft'), 100)
+                  setTimeout(() => handleStartHiddenGame(hiddenTheme), 100)
                 }}
               >
                 🌌 立即进入传送门

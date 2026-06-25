@@ -138,6 +138,8 @@ export function MathBossProvider({ children }: { children: React.ReactNode }) {
   } | null>(null)
   const gameModeRef = useRef<GameMode>('normal')
   const hiddenThemeRef = useRef<HiddenTheme>('minecraft')
+  const totalQuestionsRef = useRef(0)
+  const correctCountRef = useRef(0)
 
   const getBossArray = useCallback((mode: GameMode, theme?: HiddenTheme) => {
     if (mode === 'hidden') {
@@ -200,7 +202,9 @@ export function MathBossProvider({ children }: { children: React.ReactNode }) {
           setComboCount(0)
           setMaxCombo(0)
           setTotalQuestions(0)
+          totalQuestionsRef.current = 0
           setCorrectCount(0)
+          correctCountRef.current = 0
           setReward(0)
           setPhase('playing')
           // 同步 ref
@@ -251,10 +255,16 @@ export function MathBossProvider({ children }: { children: React.ReactNode }) {
     let pendingCombo = 0
     let availableSkills: AttackType[] = []
 
-    setTotalQuestions((prev) => prev + 1)
+    setTotalQuestions((prev) => {
+      totalQuestionsRef.current = prev + 1
+      return prev + 1
+    })
 
     if (isCorrect) {
-      setCorrectCount((prev) => prev + 1)
+      setCorrectCount((prev) => {
+        correctCountRef.current = prev + 1
+        return prev + 1
+      })
 
       // 连击+1
       const newCombo = comboCountRef.current + 1
@@ -365,8 +375,8 @@ export function MathBossProvider({ children }: { children: React.ReactNode }) {
     async (studentId: string) => {
       const defeated = bossesDefeatedRef.current
       const hearts = playerHeartsRef.current
-      const total = totalQuestions
-      const correct = correctCount
+      const total = totalQuestionsRef.current
+      const correct = correctCountRef.current
       const mode = gameModeRef.current
       try {
         const result = await mathBossStorage.finish(
@@ -402,7 +412,7 @@ export function MathBossProvider({ children }: { children: React.ReactNode }) {
         return { unlockedHidden: false }
       }
     },
-    [refreshBalance, refreshStatus, totalQuestions, correctCount],
+    [refreshBalance, refreshStatus],
   )
 
   const resetGame = useCallback(() => {
@@ -416,7 +426,9 @@ export function MathBossProvider({ children }: { children: React.ReactNode }) {
     setComboCount(0)
     setMaxCombo(0)
     setTotalQuestions(0)
+    totalQuestionsRef.current = 0
     setCorrectCount(0)
+    correctCountRef.current = 0
     setReward(0)
     // 重置 ref
     gameModeRef.current = 'normal'
