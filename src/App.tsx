@@ -33,42 +33,42 @@ export default function App() {
                 <VoucherProvider>
                   <SoundProvider>
                     <Routes>
-                    <Route path="/login" element={<LoginPage />} />
-                    <Route path="/register" element={<RegisterPage />} />
-                    <Route path="/login-redirect" element={<LoginRedirect />} />
+                      <Route path="/login" element={<LoginPage />} />
+                      <Route path="/register" element={<RegisterPage />} />
+                      <Route path="/login-redirect" element={<LoginRedirect />} />
 
-                    <Route
-                      path="/student"
-                      element={
-                        <ProtectedRoute requiredRole="student">
-                          <StudentLayout />
-                        </ProtectedRoute>
-                      }
-                    >
-                      <Route path="dashboard" element={<StudentDashboard />} />
-                      <Route path="tasks" element={<StudentTaskPage />} />
-                      <Route path="lottery" element={<LotteryPage />} />
-                      <Route path="math-boss" element={<MathBossPage />} />
-                      <Route path="voucher" element={<VoucherPage />} />
-                      <Route index element={<Navigate to="dashboard" replace />} />
-                    </Route>
+                      <Route
+                        path="/student"
+                        element={
+                          <ProtectedRoute requiredRole="student">
+                            <StudentLayout />
+                          </ProtectedRoute>
+                        }
+                      >
+                        <Route path="dashboard" element={<StudentDashboard />} />
+                        <Route path="tasks" element={<StudentTaskPage />} />
+                        <Route path="lottery" element={<LotteryPage />} />
+                        <Route path="math-boss" element={<MathBossPage />} />
+                        <Route path="voucher" element={<VoucherPage />} />
+                        <Route index element={<Navigate to="dashboard" replace />} />
+                      </Route>
 
-                    <Route
-                      path="/parent"
-                      element={
-                        <ProtectedRoute requiredRole="parent">
-                          <ParentLayout />
-                        </ProtectedRoute>
-                      }
-                    >
-                      <Route path="dashboard" element={<ParentDashboard />} />
-                      <Route path="tasks" element={<TaskManagementPage />} />
-                      <Route path="approvals" element={<ApprovalPage />} />
-                      <Route path="lottery-config" element={<LotteryConfigPage />} />
-                      <Route index element={<Navigate to="dashboard" replace />} />
-                    </Route>
+                      <Route
+                        path="/parent"
+                        element={
+                          <ProtectedRoute requiredRole="parent">
+                            <ParentLayout />
+                          </ProtectedRoute>
+                        }
+                      >
+                        <Route path="dashboard" element={<ParentDashboard />} />
+                        <Route path="tasks" element={<TaskManagementPage />} />
+                        <Route path="approvals" element={<ApprovalPage />} />
+                        <Route path="lottery-config" element={<LotteryConfigPage />} />
+                        <Route index element={<Navigate to="dashboard" replace />} />
+                      </Route>
 
-                    <Route path="*" element={<Navigate to="/login" replace />} />
+                      <Route path="*" element={<Navigate to="/login" replace />} />
                     </Routes>
                   </SoundProvider>
                 </VoucherProvider>

@@ -129,12 +129,16 @@ export default function VoucherPage() {
       <div className="grid-2" style={{ marginBottom: 'var(--spacing-md)' }}>
         <div className="card balance-card" style={{ textAlign: 'center' }}>
           <div className="balance-emoji">⭐</div>
-          <div ref={pointsBalanceRef} className="balance-amount">0</div>
+          <div ref={pointsBalanceRef} className="balance-amount">
+            0
+          </div>
           <div className="balance-label">积分余额</div>
         </div>
         <div className="card balance-card" style={{ textAlign: 'center' }}>
           <div className="balance-emoji">💰</div>
-          <div ref={voucherBalanceRef} className="balance-amount">0</div>
+          <div ref={voucherBalanceRef} className="balance-amount">
+            0
+          </div>
           <div className="balance-label">代金券余额（元）</div>
         </div>
       </div>

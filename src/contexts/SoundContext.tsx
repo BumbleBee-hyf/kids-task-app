@@ -3,13 +3,7 @@
  *
  * Exposes: muted (boolean), toggleMute(), play(key)
  */
-import {
-  createContext,
-  useContext,
-  useState,
-  useCallback,
-  type ReactNode,
-} from 'react'
+import { createContext, useContext, useState, useCallback, type ReactNode } from 'react'
 import { soundManager, type SoundKey } from '../engine/SoundManager'
 
 interface SoundContextValue {
@@ -33,9 +27,7 @@ export function SoundProvider({ children }: { children: ReactNode }) {
   }, [])
 
   return (
-    <SoundContext.Provider value={{ muted, toggleMute, play }}>
-      {children}
-    </SoundContext.Provider>
+    <SoundContext.Provider value={{ muted, toggleMute, play }}>{children}</SoundContext.Provider>
   )
 }
 

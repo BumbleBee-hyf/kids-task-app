@@ -10,7 +10,11 @@ export default function LoginPage() {
   const { login } = useAuth()
   const navigate = useNavigate()
   const { play: playSound } = useSoundContext()
-  const { containerRef: particleRef, emit: emitParticle, ready: particlesReady } = useParticleCanvas()
+  const {
+    containerRef: particleRef,
+    emit: emitParticle,
+    ready: particlesReady,
+  } = useParticleCanvas()
   const cardRef = useRef<HTMLDivElement>(null)
   const btnRef = useRef<HTMLButtonElement>(null)
 
@@ -110,7 +114,11 @@ export default function LoginPage() {
         }}
       />
 
-      <div ref={cardRef} className="login-card card" style={{ position: 'relative', zIndex: 2, opacity: 0 }}>
+      <div
+        ref={cardRef}
+        className="login-card card"
+        style={{ position: 'relative', zIndex: 2, opacity: 0 }}
+      >
         <div className="login-header">
           <span className="login-emoji">🌟</span>
           <h1>任务积分乐园</h1>
@@ -139,7 +147,12 @@ export default function LoginPage() {
             />
           </div>
           {error && <div className="login-error">{error}</div>}
-          <button ref={btnRef} className="btn btn-primary btn-lg login-btn" type="submit" disabled={loading}>
+          <button
+            ref={btnRef}
+            className="btn btn-primary btn-lg login-btn"
+            type="submit"
+            disabled={loading}
+          >
             {loading ? '登录中...' : '登录'}
           </button>
         </form>

@@ -9,7 +9,11 @@ export default function RegisterPage() {
   const { register } = useAuth()
   const navigate = useNavigate()
   const { play: playSound } = useSoundContext()
-  const { containerRef: particleRef, emit: emitParticle, ready: particlesReady } = useParticleCanvas()
+  const {
+    containerRef: particleRef,
+    emit: emitParticle,
+    ready: particlesReady,
+  } = useParticleCanvas()
   const cardRef = useRef<HTMLDivElement>(null)
 
   const [username, setUsername] = useState('')
@@ -109,7 +113,11 @@ export default function RegisterPage() {
         }}
       />
 
-      <div ref={cardRef} className="login-card card" style={{ position: 'relative', zIndex: 2, opacity: 0 }}>
+      <div
+        ref={cardRef}
+        className="login-card card"
+        style={{ position: 'relative', zIndex: 2, opacity: 0 }}
+      >
         <div className="login-header">
           <span className="login-emoji">🎉</span>
           <h1>注册新账号</h1>

@@ -11,11 +11,7 @@ const path = require('path')
 const outputDir = path.join(__dirname, '..', 'public', 'sounds')
 
 // WAV file generator
-function createWav(
-  sampleRate = 22050,
-  durationSec = 0.2,
-  generator,
-) {
+function createWav(sampleRate = 22050, durationSec = 0.2, generator) {
   const numSamples = Math.floor(sampleRate * durationSec)
   const dataSize = numSamples * 2 // 16-bit = 2 bytes per sample
   const buffer = Buffer.alloc(44 + dataSize)
@@ -120,39 +116,54 @@ const sounds = {
   num_press: { gen: sineTone(600, 20), dur: 0.06 },
   correct: { gen: ascendingTone(440, 880, 6), dur: 0.2 },
   wrong: { gen: buzzTone(180, 8), dur: 0.25 },
-  hit_normal: { gen: (t, dur) => {
-    const env = Math.exp(-t * 12) * Math.min(1, t * 80)
-    return (Math.sin(2 * Math.PI * 200 * t) + Math.random() * 0.3) * env * 0.5
-  }, dur: 0.15 },
-  hit_skill: { gen: (t, dur) => {
-    const env = Math.exp(-t * 8) * Math.min(1, t * 60)
-    const freq = 300 - t * 400
-    return (Math.sin(2 * Math.PI * freq * t) + Math.random() * 0.2) * env * 0.6
-  }, dur: 0.3 },
-  boss_hit: { gen: (t, dur) => {
-    const env = Math.exp(-t * 10) * Math.min(1, t * 50)
-    return (Math.sin(2 * Math.PI * 100 * t) * 0.6 + Math.random() * 0.2) * env * 0.5
-  }, dur: 0.2 },
+  hit_normal: {
+    gen: (t, dur) => {
+      const env = Math.exp(-t * 12) * Math.min(1, t * 80)
+      return (Math.sin(2 * Math.PI * 200 * t) + Math.random() * 0.3) * env * 0.5
+    },
+    dur: 0.15,
+  },
+  hit_skill: {
+    gen: (t, dur) => {
+      const env = Math.exp(-t * 8) * Math.min(1, t * 60)
+      const freq = 300 - t * 400
+      return (Math.sin(2 * Math.PI * freq * t) + Math.random() * 0.2) * env * 0.6
+    },
+    dur: 0.3,
+  },
+  boss_hit: {
+    gen: (t, dur) => {
+      const env = Math.exp(-t * 10) * Math.min(1, t * 50)
+      return (Math.sin(2 * Math.PI * 100 * t) * 0.6 + Math.random() * 0.2) * env * 0.5
+    },
+    dur: 0.2,
+  },
   boss_defeat: { gen: arpeggioTone([523, 659, 784, 1047, 1319], 0.1, 3), dur: 0.6 },
   combo_3: { gen: arpeggioTone([440, 554, 659], 0.08, 5), dur: 0.3 },
   combo_5: { gen: arpeggioTone([440, 523, 587, 659, 784], 0.06, 5), dur: 0.35 },
   combo_7: { gen: arpeggioTone([440, 494, 523, 587, 659, 698, 784, 880], 0.05, 4), dur: 0.45 },
-  box_open: { gen: (t, dur) => {
-    const env = Math.exp(-t * 5)
-    const creak = Math.sin(2 * Math.PI * (1200 + t * 800) * t) * 0.3
-    const pop = t > 0.1 ? Math.exp(-(t - 0.1) * 15) * Math.sin(2 * Math.PI * 600 * t) * 0.4 : 0
-    return (creak + pop) * env
-  }, dur: 0.4 },
+  box_open: {
+    gen: (t, dur) => {
+      const env = Math.exp(-t * 5)
+      const creak = Math.sin(2 * Math.PI * (1200 + t * 800) * t) * 0.3
+      const pop = t > 0.1 ? Math.exp(-(t - 0.1) * 15) * Math.sin(2 * Math.PI * 600 * t) * 0.4 : 0
+      return (creak + pop) * env
+    },
+    dur: 0.4,
+  },
   wheel_tick: { gen: clickTone(), dur: 0.04 },
   wheel_win: { gen: arpeggioTone([523, 659, 784, 1047], 0.1, 4), dur: 0.5 },
   confetti: { gen: noiseBurst(12), dur: 0.15 },
   checkin: { gen: arpeggioTone([660, 880], 0.1, 5), dur: 0.25 },
-  points_gain: { gen: (t, _dur) => {
-    const env = Math.exp(-t * 8)
-    const coin1 = Math.sin(2 * Math.PI * 1200 * t) * 0.3
-    const coin2 = Math.sin(2 * Math.PI * 1800 * t) * 0.2
-    return (coin1 + coin2) * env
-  }, dur: 0.2 },
+  points_gain: {
+    gen: (t, _dur) => {
+      const env = Math.exp(-t * 8)
+      const coin1 = Math.sin(2 * Math.PI * 1200 * t) * 0.3
+      const coin2 = Math.sin(2 * Math.PI * 1800 * t) * 0.2
+      return (coin1 + coin2) * env
+    },
+    dur: 0.2,
+  },
   level_up: { gen: arpeggioTone([523, 659, 784, 1047, 1319, 1568], 0.08, 3), dur: 0.6 },
 }
 

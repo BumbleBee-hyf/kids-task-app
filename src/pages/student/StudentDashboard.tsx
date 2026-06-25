@@ -15,7 +15,11 @@ export default function StudentDashboard() {
   const { balance: pointBalance, refreshBalance } = usePoints()
   const navigate = useNavigate()
   const { play: playSound } = useSoundContext()
-  const { containerRef: particleRef, emit: emitParticle, ready: particlesReady } = useParticleCanvas()
+  const {
+    containerRef: particleRef,
+    emit: emitParticle,
+    ready: particlesReady,
+  } = useParticleCanvas()
   const pageRef = useRef<HTMLDivElement>(null)
   const pendingRef = useRef<HTMLDivElement>(null)
   const pointsRef = useRef<HTMLDivElement>(null)
@@ -188,7 +192,11 @@ export default function StudentDashboard() {
           onClick={() => navigate('/student/tasks')}
         >
           <div className="stat-card-icon">📌</div>
-          <div ref={pendingRef} className="stat-card-value" style={{ color: 'var(--color-warning)' }}>
+          <div
+            ref={pendingRef}
+            className="stat-card-value"
+            style={{ color: 'var(--color-warning)' }}
+          >
             0
           </div>
           <div className="stat-card-label">待完成任务</div>
@@ -198,7 +206,11 @@ export default function StudentDashboard() {
           onClick={() => navigate('/student/lottery')}
         >
           <div className="stat-card-icon">⭐</div>
-          <div ref={pointsRef} className="stat-card-value" style={{ color: 'var(--color-primary)' }}>
+          <div
+            ref={pointsRef}
+            className="stat-card-value"
+            style={{ color: 'var(--color-primary)' }}
+          >
             0
           </div>
           <div className="stat-card-label">我的积分</div>
@@ -208,7 +220,11 @@ export default function StudentDashboard() {
           onClick={() => navigate('/student/voucher')}
         >
           <div className="stat-card-icon">💰</div>
-          <div ref={voucherRef} className="stat-card-value" style={{ color: 'var(--color-secondary)' }}>
+          <div
+            ref={voucherRef}
+            className="stat-card-value"
+            style={{ color: 'var(--color-secondary)' }}
+          >
             0
           </div>
           <div className="stat-card-label">代金券余额</div>

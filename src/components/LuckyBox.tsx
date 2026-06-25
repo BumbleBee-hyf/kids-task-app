@@ -63,7 +63,11 @@ export default function LuckyBox({ prizes = DEFAULT_PRIZES, onWin, disabled }: L
   const [showResult, setShowResult] = useState(false)
 
   const { play: playSound } = useSoundContext()
-  const { containerRef: particleRef, emit: emitParticle, ready: particlesReady } = useParticleCanvas()
+  const {
+    containerRef: particleRef,
+    emit: emitParticle,
+    ready: particlesReady,
+  } = useParticleCanvas()
   const boxGridRef = useRef<HTMLDivElement>(null)
 
   // 点击宝箱
@@ -84,28 +88,8 @@ export default function LuckyBox({ prizes = DEFAULT_PRIZES, onWin, disabled }: L
       const tl = gsap.timeline()
 
       // After box opening animation (CSS handles the lid), burst particles
-      tl.call(() => {
-        if (particlesReady && boxGridRef.current) {
-          const boxItems = boxGridRef.current.children
-          const targetBox = boxItems[index] as HTMLElement
-          if (targetBox) {
-            const rect = targetBox.getBoundingClientRect()
-            const gridRect = boxGridRef.current.getBoundingClientRect()
-            const cx = rect.left - gridRect.left + rect.width / 2
-            const cy = rect.top - gridRect.top + rect.height / 2
-
-            emitParticle('boxBurst', {
-              x: cx,
-              y: cy,
-              countMultiplier: selectedPrize.amount >= 10 ? 2 : 1,
-            })
-          }
-        }
-      }, [], '+=0.3')
-
-      // Grand prize: second burst
-      if (selectedPrize.amount >= 10) {
-        tl.call(() => {
+      tl.call(
+        () => {
           if (particlesReady && boxGridRef.current) {
             const boxItems = boxGridRef.current.children
             const targetBox = boxItems[index] as HTMLElement
@@ -114,18 +98,50 @@ export default function LuckyBox({ prizes = DEFAULT_PRIZES, onWin, disabled }: L
               const gridRect = boxGridRef.current.getBoundingClientRect()
               const cx = rect.left - gridRect.left + rect.width / 2
               const cy = rect.top - gridRect.top + rect.height / 2
-              emitParticle('sparkleTrail', { x: cx, y: cy, countMultiplier: 3 })
+
+              emitParticle('boxBurst', {
+                x: cx,
+                y: cy,
+                countMultiplier: selectedPrize.amount >= 10 ? 2 : 1,
+              })
             }
           }
-        }, [], '+=0.2')
+        },
+        [],
+        '+=0.3',
+      )
+
+      // Grand prize: second burst
+      if (selectedPrize.amount >= 10) {
+        tl.call(
+          () => {
+            if (particlesReady && boxGridRef.current) {
+              const boxItems = boxGridRef.current.children
+              const targetBox = boxItems[index] as HTMLElement
+              if (targetBox) {
+                const rect = targetBox.getBoundingClientRect()
+                const gridRect = boxGridRef.current.getBoundingClientRect()
+                const cx = rect.left - gridRect.left + rect.width / 2
+                const cy = rect.top - gridRect.top + rect.height / 2
+                emitParticle('sparkleTrail', { x: cx, y: cy, countMultiplier: 3 })
+              }
+            }
+          },
+          [],
+          '+=0.2',
+        )
       }
 
       // Show result after animation completes
-      tl.call(() => {
-        onWin(selectedPrize)
-        setShowResult(true)
-        playSound('confetti')
-      }, [], '+=0.4')
+      tl.call(
+        () => {
+          onWin(selectedPrize)
+          setShowResult(true)
+          playSound('confetti')
+        },
+        [],
+        '+=0.4',
+      )
     },
     [disabled, openingIndex, boxes, onWin, playSound, emitParticle, particlesReady],
   )

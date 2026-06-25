@@ -27,9 +27,7 @@ export interface BattleTimelineOptions {
 // Normal Attack Timeline
 // ---------------------------------------------------------------------------
 
-export function createNormalAttackTimeline(
-  opts: BattleTimelineOptions,
-): gsap.core.Timeline {
+export function createNormalAttackTimeline(opts: BattleTimelineOptions): gsap.core.Timeline {
   const tl = gsap.timeline({
     defaults: { ease: 'power2.out' },
   })
@@ -90,9 +88,7 @@ export function createNormalAttackTimeline(
 // Shadow Strike Timeline
 // ---------------------------------------------------------------------------
 
-export function createShadowStrikeTimeline(
-  opts: BattleTimelineOptions,
-): gsap.core.Timeline {
+export function createShadowStrikeTimeline(opts: BattleTimelineOptions): gsap.core.Timeline {
   const tl = gsap.timeline({
     defaults: { ease: 'power2.out' },
   })
@@ -159,9 +155,7 @@ export function createShadowStrikeTimeline(
 // Rising Dragon Timeline
 // ---------------------------------------------------------------------------
 
-export function createRisingDragonTimeline(
-  opts: BattleTimelineOptions,
-): gsap.core.Timeline {
+export function createRisingDragonTimeline(opts: BattleTimelineOptions): gsap.core.Timeline {
   const tl = gsap.timeline({
     defaults: { ease: 'power2.out' },
   })
@@ -240,9 +234,7 @@ export interface BossAttackTimelineOptions {
   onEffectStart?: (effect: string) => void
 }
 
-export function createBossAttackTimeline(
-  opts: BossAttackTimelineOptions,
-): gsap.core.Timeline {
+export function createBossAttackTimeline(opts: BossAttackTimelineOptions): gsap.core.Timeline {
   const tl = gsap.timeline({
     defaults: { ease: 'power2.out' },
   })
@@ -333,11 +325,7 @@ export function shakeScreen(
 // Number Count-Up (for dashboard stats)
 // ---------------------------------------------------------------------------
 
-export function countUp(
-  element: HTMLElement | null,
-  target: number,
-  duration = 0.8,
-): void {
+export function countUp(element: HTMLElement | null, target: number, duration = 0.8): void {
   if (!element) return
 
   const obj = { value: 0 }
