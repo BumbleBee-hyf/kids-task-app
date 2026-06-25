@@ -5,11 +5,7 @@
  * Returns { containerRef, emit, clear } for use in components.
  */
 import { useRef, useCallback, useEffect, useState } from 'react'
-import {
-  ParticleSystem,
-  type ParticlePreset,
-  type EmitOptions,
-} from '../engine/ParticleSystem'
+import { ParticleSystem, type ParticlePreset, type EmitOptions } from '../engine/ParticleSystem'
 
 export interface UseParticleCanvasReturn {
   /** Ref to attach to the container element */
@@ -26,49 +22,61 @@ export function useParticleCanvas(): UseParticleCanvasReturn {
   const containerRef = useRef<HTMLDivElement>(null)
   const systemRef = useRef<ParticleSystem | null>(null)
   const [ready, setReady] = useState(false)
+  const initAttemptedRef = useRef(false)
 
   useEffect(() => {
     const container = containerRef.current
-    if (!container) return
+    if (!container || initAttemptedRef.current) return
 
+    initAttemptedRef.current = true
     const system = new ParticleSystem()
     systemRef.current = system
 
+    let destroyed = false
+
     system
       .init(container, {
-        width: container.clientWidth,
-        height: container.clientHeight,
+        width: container.clientWidth || 300,
+        height: container.clientHeight || 200,
       })
       .then(() => {
-        setReady(true)
+        if (!destroyed) {
+          setReady(true)
+        } else {
+          // Component was unmounted before init completed — clean up
+          system.destroy()
+          systemRef.current = null
+        }
       })
       .catch((err) => {
         console.warn('Particle system init failed:', err)
+        systemRef.current = null
       })
 
     // Resize observer
     const observer = new ResizeObserver((entries) => {
       for (const entry of entries) {
         const { width, height } = entry.contentRect
-        system.resize(width, height)
+        if (width > 0 && height > 0) {
+          system.resize(width, height)
+        }
       }
     })
     observer.observe(container)
 
     return () => {
+      destroyed = true
       observer.disconnect()
       system.destroy()
       systemRef.current = null
       setReady(false)
+      initAttemptedRef.current = false
     }
   }, [])
 
-  const emit = useCallback(
-    (preset: ParticlePreset, options: EmitOptions) => {
-      systemRef.current?.emit(preset, options)
-    },
-    [],
-  )
+  const emit = useCallback((preset: ParticlePreset, options: EmitOptions) => {
+    systemRef.current?.emit(preset, options)
+  }, [])
 
   const clear = useCallback(() => {
     systemRef.current?.clear()

@@ -173,8 +173,7 @@ function createPresetConfig(
         drag: 0.01,
         size: { start: 6, end: 4 },
         colors: [
-          0xff6b6b, 0xffd93d, 0x6bcb77, 0x4d96ff, 0xff8c42, 0xc56cf0,
-          0xff6348, 0x7bed9f, 0x70a1ff,
+          0xff6b6b, 0xffd93d, 0x6bcb77, 0x4d96ff, 0xff8c42, 0xc56cf0, 0xff6348, 0x7bed9f, 0x70a1ff,
         ],
         alpha: [1, 1, 0.3],
         shape: 'square',
@@ -190,9 +189,7 @@ function createPresetConfig(
         gravity: 300,
         drag: 0.02,
         size: { start: 5, end: 3 },
-        colors: [
-          0xffd700, 0xff6b6b, 0x4d96ff, 0x6bcb77, 0xc56cf0, 0xff8c42,
-        ],
+        colors: [0xffd700, 0xff6b6b, 0x4d96ff, 0x6bcb77, 0xc56cf0, 0xff8c42],
         alpha: [1, 1, 0],
         shape: 'square',
       }
@@ -320,9 +317,7 @@ function createPresetConfig(
         gravity: 150,
         drag: 0.02,
         size: { start: 5, end: 1 },
-        colors: [
-          0xffd700, 0xff6b6b, 0x4d96ff, 0x6bcb77, 0xc56cf0, 0xff8c42,
-        ],
+        colors: [0xffd700, 0xff6b6b, 0x4d96ff, 0x6bcb77, 0xc56cf0, 0xff8c42],
         alpha: [1, 1, 0],
         shape: 'star',
         additive: true,
@@ -385,10 +380,16 @@ export class ParticleSystem {
       antialias: true,
       resolution: Math.min(window.devicePixelRatio || 1, 2),
       autoDensity: true,
+      preference: 'webgl',
     })
 
-    // Style the canvas as overlay
+    // Safety check: canvas must exist after init
     const canvas = this.app.canvas
+    if (!canvas) {
+      throw new Error(
+        'PixiJS Application.init() did not create a canvas — WebGL may be unavailable',
+      )
+    }
     canvas.style.position = 'absolute'
     canvas.style.top = '0'
     canvas.style.left = '0'
@@ -413,19 +414,15 @@ export class ParticleSystem {
   /** Emit particles from a preset */
   emit(preset: ParticlePreset, options: EmitOptions): void {
     const config = createPresetConfig(preset, options.overrides)
-    const count = Math.floor(
-      config.count * (options.countMultiplier ?? 1),
-    )
+    const count = Math.floor(config.count * (options.countMultiplier ?? 1))
 
     for (let i = 0; i < count; i++) {
       if (this.particles.length >= MAX_PARTICLES) break
 
-      const angleRad =
-        ((randomRange(config.angle.min, config.angle.max) * Math.PI) / 180)
+      const angleRad = (randomRange(config.angle.min, config.angle.max) * Math.PI) / 180
       const speed = randomRange(config.speed.min, config.speed.max)
       const life = randomRange(config.lifetime.min, config.lifetime.max)
-      const color =
-        config.colors[Math.floor(Math.random() * config.colors.length)]
+      const color = config.colors[Math.floor(Math.random() * config.colors.length)]
 
       this.particles.push({
         x: options.x,
@@ -464,7 +461,7 @@ export class ParticleSystem {
   resize(width: number, height: number): void {
     this.width = width
     this.height = height
-    if (this.app) {
+    if (this.app?.renderer) {
       this.app.renderer.resize(width, height)
     }
   }
@@ -473,8 +470,16 @@ export class ParticleSystem {
   destroy(): void {
     this.clear()
     if (this.app) {
-      this.app.ticker.remove(this.update, this)
-      this.app.destroy(true)
+      try {
+        this.app.ticker.remove(this.update, this)
+      } catch {
+        // ticker may not be initialized yet if init() hasn't completed
+      }
+      try {
+        this.app.destroy(true)
+      } catch {
+        // destroy may fail if app hasn't fully initialized
+      }
       this.app = null
     }
     this.container = null
@@ -614,12 +619,9 @@ export class ParticleSystem {
     innerR: number,
   ): void {
     const step = Math.PI / points
-    let angle = -Math.PI / 2 + (Math.random() * 0.1) // slight randomness
+    let angle = -Math.PI / 2 + Math.random() * 0.1 // slight randomness
 
-    g.moveTo(
-      cx + Math.cos(angle) * outerR,
-      cy + Math.sin(angle) * outerR,
-    )
+    g.moveTo(cx + Math.cos(angle) * outerR, cy + Math.sin(angle) * outerR)
 
     for (let i = 0; i < points * 2; i++) {
       angle += step
