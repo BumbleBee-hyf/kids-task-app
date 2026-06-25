@@ -312,7 +312,7 @@ export default function MathBossPage() {
       setAnswerState('choosing')
     } else {
       // 直接普通攻击
-      doAttack('normal')
+      doAttackRef.current('normal')
     }
   }, [
     answerState,
