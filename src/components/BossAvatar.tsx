@@ -1753,24 +1753,24 @@ const TankSherman = ({
     </defs>
     <circle cx="50" cy="50" r="48" fill="url(#tsh-bg)" />
     <g filter="url(#tsh-g)">
-      {/* 车体 */}
+      {/* 车体 — 土黄色 */}
       <rect
         x="12"
         y="46"
         width="76"
         height="20"
         rx="3"
-        fill="#1E40AF"
-        stroke="#1E3A8A"
+        fill="#B45309"
+        stroke="#92400E"
         strokeWidth="1.5"
       />
       {/* 履带 */}
-      <rect x="8" y="62" width="84" height="10" rx="5" fill="#172554" />
-      <circle cx="20" cy="67" r="4" fill="#1E3A8A" />
-      <circle cx="36" cy="67" r="4" fill="#1E3A8A" />
-      <circle cx="52" cy="67" r="4" fill="#1E3A8A" />
-      <circle cx="68" cy="67" r="4" fill="#1E3A8A" />
-      <circle cx="80" cy="67" r="4" fill="#1E3A8A" />
+      <rect x="8" y="62" width="84" height="10" rx="5" fill="#78350F" />
+      <circle cx="20" cy="67" r="4" fill="#92400E" />
+      <circle cx="36" cy="67" r="4" fill="#92400E" />
+      <circle cx="52" cy="67" r="4" fill="#92400E" />
+      <circle cx="68" cy="67" r="4" fill="#92400E" />
+      <circle cx="80" cy="67" r="4" fill="#92400E" />
       {/* 炮塔 */}
       <rect
         x="32"
@@ -1778,17 +1778,17 @@ const TankSherman = ({
         width="26"
         height="20"
         rx="4"
-        fill="#2563EB"
-        stroke="#1D4ED8"
+        fill="#D97706"
+        stroke="#B45309"
         strokeWidth="1"
       />
       {/* 主炮 */}
-      <rect x="56" y="36" width="28" height="5" rx="2" fill="#3B82F6" />
+      <rect x="56" y="36" width="28" height="5" rx="2" fill="#F59E0B" />
       {/* 副炮 */}
-      <rect x="30" y="34" width="4" height="10" rx="1.5" fill="#60A5FA" />
+      <rect x="30" y="34" width="4" height="10" rx="1.5" fill="#FBBF24" />
       {/* 幻影分身（半透明） */}
-      <rect x="20" y="44" width="24" height="8" rx="2" fill="#60A5FA" opacity="0.2" />
-      <rect x="16" y="34" width="10" height="6" rx="2" fill="#60A5FA" opacity="0.15" />
+      <rect x="20" y="44" width="24" height="8" rx="2" fill="#FDE68A" opacity="0.2" />
+      <rect x="16" y="34" width="10" height="6" rx="2" fill="#FDE68A" opacity="0.15" />
       {/* 星芒 — 炫耀光环 */}
       <circle cx="45" cy="38" r="8" fill={glowColor} opacity="0.15" />
       <circle cx="45" cy="38" r="4" fill={glowColor} opacity="0.3" />
@@ -2077,51 +2077,63 @@ const TankDahu = ({
     </defs>
     <circle cx="50" cy="50" r="48" fill="url(#tdh-bg)" />
     <g filter="url(#tdh-g)">
-      {/* 车体 — 虎式坦克方正厚重的轮廓 */}
+      {/* 车体 — 虎式坦克方正厚重的灰色装甲 */}
       <rect
         x="8"
         y="44"
         width="84"
         height="22"
         rx="2"
-        fill="#451A03"
-        stroke="#291002"
+        fill="#6B7280"
+        stroke="#4B5563"
         strokeWidth="2"
       />
-      {/* 虎纹涂装 */}
-      <path d="M20 44 L24 54 L28 44" fill="#F97316" opacity="0.25" />
-      <path d="M38 44 L42 56 L46 44" fill="#F97316" opacity="0.25" />
-      <path d="M56 44 L60 54 L64 44" fill="#F97316" opacity="0.25" />
-      <path d="M74 44 L78 56 L82 44" fill="#F97316" opacity="0.25" />
+      {/* 灰色装甲纹理 */}
+      <path d="M20 44 L24 54 L28 44" fill="#9CA3AF" opacity="0.3" />
+      <path d="M38 44 L42 56 L46 44" fill="#9CA3AF" opacity="0.3" />
+      <path d="M56 44 L60 54 L64 44" fill="#9CA3AF" opacity="0.3" />
+      <path d="M74 44 L78 56 L82 44" fill="#9CA3AF" opacity="0.3" />
       {/* 履带 */}
-      <rect x="6" y="62" width="88" height="10" rx="5" fill="#291002" />
-      <circle cx="18" cy="67" r="4.5" fill="#451A03" />
-      <circle cx="34" cy="67" r="4.5" fill="#451A03" />
-      <circle cx="50" cy="67" r="4.5" fill="#451A03" />
-      <circle cx="66" cy="67" r="4.5" fill="#451A03" />
-      <circle cx="82" cy="67" r="4.5" fill="#451A03" />
-      {/* 炮塔 — 虎式坦克棱角分明的炮塔 */}
+      <rect x="6" y="62" width="88" height="10" rx="5" fill="#374151" />
+      <circle cx="18" cy="67" r="4.5" fill="#4B5563" />
+      <circle cx="34" cy="67" r="4.5" fill="#4B5563" />
+      <circle cx="50" cy="67" r="4.5" fill="#4B5563" />
+      <circle cx="66" cy="67" r="4.5" fill="#4B5563" />
+      <circle cx="82" cy="67" r="4.5" fill="#4B5563" />
+      {/* 炮塔 — 灰色棱角分明 */}
       <rect
         x="28"
         y="24"
         width="28"
         height="22"
         rx="2"
-        fill="#78350F"
-        stroke="#451A03"
+        fill="#9CA3AF"
+        stroke="#6B7280"
         strokeWidth="1"
       />
       {/* 长炮管 — 88mm炮 */}
-      <rect x="54" y="34" width="36" height="5" rx="2" fill="#92400E" />
-      <rect x="88" y="33" width="6" height="7" rx="1" fill="#B45309" />
+      <rect x="54" y="34" width="36" height="5" rx="2" fill="#6B7280" />
+      <rect x="88" y="33" width="6" height="7" rx="1" fill="#9CA3AF" />
+      {/* 五颗星 — 虎式王牌标志 */}
+      <text x="14" y="58" fontSize="7" fill="#FBBF24" opacity="0.9">
+        ★
+      </text>
+      <text x="24" y="58" fontSize="7" fill="#FBBF24" opacity="0.9">
+        ★
+      </text>
+      <text x="34" y="58" fontSize="7" fill="#FBBF24" opacity="0.9">
+        ★
+      </text>
+      <text x="44" y="58" fontSize="7" fill="#FBBF24" opacity="0.9">
+        ★
+      </text>
+      <text x="54" y="58" fontSize="7" fill="#FBBF24" opacity="0.9">
+        ★
+      </text>
       {/* 生命之光 — 赋予其他玩具生命 */}
       <circle cx="42" cy="35" r="8" fill={glowColor} opacity="0.12" />
       <circle cx="42" cy="35" r="5" fill={glowColor} opacity="0.25" />
       <circle cx="42" cy="35" r="2.5" fill={glowColor} opacity="0.6" />
-      {/* 虎头标志 */}
-      <text x="38" y="40" fontSize="8" fill={glowColor} opacity="0.9">
-        🐯
-      </text>
       {/* 生命能量射线 */}
       <line x1="48" y1="34" x2="58" y2="28" stroke={glowColor} strokeWidth="0.8" opacity="0.4" />
       <line x1="48" y1="36" x2="60" y2="38" stroke={glowColor} strokeWidth="0.8" opacity="0.3" />

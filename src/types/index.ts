@@ -441,8 +441,8 @@ export const TANK_BOSSES: MinecraftBossDef[] = [
     icon: 'tank_sherman',
     difficulty: 'medium',
     hearts: 2,
-    color: '#1E40AF',
-    glowColor: '#60A5FA',
+    color: '#B45309',
+    glowColor: '#F59E0B',
     attackEffect: '✨',
   },
   {
@@ -477,9 +477,9 @@ export const TANK_BOSSES: MinecraftBossDef[] = [
     icon: 'tank_dahu',
     difficulty: 'hard',
     hearts: 4,
-    color: '#451A03',
-    glowColor: '#F97316',
-    attackEffect: '🐯',
+    color: '#6B7280',
+    glowColor: '#FBBF24',
+    attackEffect: '⭐',
   },
 ]
 
